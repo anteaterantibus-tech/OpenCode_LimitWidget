@@ -125,31 +125,41 @@
             <StackPanel Grid.Row="3" Margin="0,14,0,0">
                 <TextBlock Text="ОБНОВЛЕНИЕ"
                            Style="{StaticResource SectionLabel}" />
-                <WrapPanel Margin="0,7,0,0">
+                <Grid Margin="0,7,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <RadioButton x:Name="Refresh30"
+                                 Grid.Column="0"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
                                  Content="30 с"
                                  Tag="30"
-                                 Margin="0,0,6,0" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh60"
+                                 Grid.Column="1"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
                                  Content="1 мин"
                                  Tag="60"
-                                 Margin="0,0,6,0" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh300"
+                                 Grid.Column="2"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
                                  Content="5 мин"
                                  Tag="300"
-                                 Margin="0,0,6,0" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh900"
+                                 Grid.Column="3"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
                                  Content="15 мин"
                                  Tag="900" />
-                </WrapPanel>
+                </Grid>
             </StackPanel>
 
             <!-- Toggles -->
@@ -192,37 +202,49 @@
                             Content="Прослушать"
                             Click="PreviewSound_Click" />
                 </Grid>
-                <WrapPanel Margin="0,6,0,0">
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <RadioButton x:Name="SoundSoft"
+                                 Grid.Column="0"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
                                  Content="Мягкий"
                                  Tag="soft"
-                                 Margin="0,0,6,6" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundBell"
+                                 Grid.Column="1"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
                                  Content="Звон"
                                  Tag="bell"
-                                 Margin="0,0,6,6" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundWood"
+                                 Grid.Column="2"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
                                  Content="Дерево"
                                  Tag="wood"
-                                 Margin="0,0,6,6" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundDrop"
+                                 Grid.Column="3"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
                                  Content="Капля"
                                  Tag="drop"
-                                 Margin="0,0,6,6" />
+                                 Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundMinimal"
+                                 Grid.Column="4"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
                                  Content="Тон"
                                  Tag="minimal" />
-                </WrapPanel>
+                </Grid>
                 <CheckBox x:Name="AnimateToggle"
                           Style="{StaticResource Toggle}"
                           Content="Подсветка рамки"
