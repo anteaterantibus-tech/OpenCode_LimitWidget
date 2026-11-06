@@ -47,7 +47,7 @@
 ## Установка и запуск
 
 ```powershell
-git clone https://github.com/<ваш-аккаунт>/OpenCodeWidget.git
+git clone https://github.com/anteaterantibus-tech/OpenCode_LimitWidget.git
 cd OpenCodeWidget
 dotnet run
 ```
