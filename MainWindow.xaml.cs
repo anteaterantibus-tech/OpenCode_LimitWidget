@@ -34,7 +34,7 @@ public partial class MainWindow : Window
 
     private const double NormalWindowWidth = 412;
     private const double CompactWindowWidth = 332;
-    private const double TaskbarBarWidth = 300;
+    private const double TaskbarBarWidth = 380;
     private const double TaskbarBarHeight = 36;
 
     private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
@@ -429,8 +429,8 @@ public partial class MainWindow : Window
 
         if (level == LoadLevel.Ok)
         {
-            _loadSummary = null;
-            SetLoadVisible(false, LoadLevel.Ok, null);
+            _loadSummary = "Нагрузка: в норме";
+            ApplyLoadState(LoadLevel.Ok, "OpenCode Go: нагрузка в норме");
             return;
         }
 
@@ -459,23 +459,34 @@ public partial class MainWindow : Window
 
         lines.Add("Обновлено: " + DateTimeOffset.Now.ToString("HH:mm", Ru));
 
-        _loadSummary = $"Нагрузка: {reason}";
-        SetLoadVisible(true, level, string.Join("\n", lines));
+        _loadSummary = level == LoadLevel.Outage
+            ? "Нагрузка: сбой"
+            : $"Нагрузка: {(reason.Length > 0 ? reason : "повышена")}";
+
+        ApplyLoadState(level, string.Join("\n", lines));
     }
 
-    private void SetLoadVisible(bool visible, LoadLevel level, string? tooltip)
+    private void ApplyLoadState(LoadLevel level, string? tooltip)
     {
-        var visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        var degraded = level != LoadLevel.Ok;
 
-        LoadChip.Visibility = visibility;
-        CompactLoadDot.Visibility = visibility;
-        TaskbarLoadDot.Visibility = visibility;
+        LoadChip.Visibility = degraded ? Visibility.Visible : Visibility.Collapsed;
+        CompactLoadIcon.Visibility = degraded ? Visibility.Visible : Visibility.Collapsed;
 
-        var brush = (Brush)FindResource(level == LoadLevel.Outage ? "DangerBrush" : "WarningBrush");
+        var brush = level switch
+        {
+            LoadLevel.Outage => (Brush)FindResource("DangerBrush"),
+            LoadLevel.Degraded => (Brush)FindResource("WarningBrush"),
+            _ => (Brush)FindResource("MutedBrush"),
+        };
 
-        LoadChipDot.Fill = brush;
-        CompactLoadDot.Fill = brush;
-        TaskbarLoadDot.Fill = brush;
+        LoadChipIcon.Foreground = brush;
+        CompactLoadIcon.Foreground = brush;
+        TaskbarLoadIcon.Foreground = brush;
+        TaskbarLoadLabel.Foreground = degraded ? brush : (Brush)FindResource("MutedBrush");
+
+        LoadChipText.Text = level == LoadLevel.Outage ? "Сбой" : "Нагрузка";
+        LoadChipText.Foreground = brush;
 
         if (brush is SolidColorBrush solid)
         {
@@ -484,12 +495,10 @@ public partial class MainWindow : Window
             LoadChip.BorderBrush = new SolidColorBrush(Color.FromArgb(0x66, color.R, color.G, color.B));
         }
 
-        LoadChipText.Text = level == LoadLevel.Outage ? "Сбой" : "Нагрузка";
-        LoadChipText.Foreground = brush;
-
         LoadChip.ToolTip = tooltip;
-        CompactLoadDot.ToolTip = tooltip;
-        TaskbarLoadDot.ToolTip = tooltip;
+        CompactLoadIcon.ToolTip = tooltip;
+        TaskbarLoadIcon.ToolTip = tooltip;
+        TaskbarLoadLabel.ToolTip = tooltip;
     }
 
     private static string ReasonText(string? reason)
@@ -623,9 +632,10 @@ public partial class MainWindow : Window
     private void SetLive(bool ok)
     {
         var brush = (Brush)(ok ? FindResource("SuccessBrush") : FindResource("DangerBrush"));
-        LiveDot.Fill = brush;
-        CompactLiveDot.Fill = brush;
-        TaskbarLiveDot.Fill = brush;
+        LiveIcon.Foreground = brush;
+        CompactLiveIcon.Foreground = brush;
+        TaskbarNetIcon.Foreground = brush;
+        TaskbarNetLabel.Foreground = ok ? (Brush)FindResource("MutedBrush") : brush;
     }
 
     private void CheckFullscreen()

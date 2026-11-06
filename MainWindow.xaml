@@ -143,11 +143,14 @@
                 <!-- Plan line -->
                 <Grid Grid.Row="1" Margin="0,10,0,0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Ellipse x:Name="LiveDot"
-                                 Width="6"
-                                 Height="6"
-                                 Fill="{StaticResource WarningBrush}"
-                                 Margin="0,0,6,0" />
+                        <TextBlock x:Name="LiveIcon"
+                                   Text="&#xE701;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="10"
+                                   Foreground="{StaticResource WarningBrush}"
+                                   Margin="0,0,6,0"
+                                   VerticalAlignment="Center"
+                                   ToolTip="Подключение к opencode.ai" />
                         <TextBlock x:Name="SubtitleText"
                                    Text="Подключение..."
                                    FontSize="10.5"
@@ -171,12 +174,13 @@
                                 MouseLeftButtonUp="StatusChip_Click"
                                 ToolTip="Состояние OpenCode">
                             <StackPanel Orientation="Horizontal">
-                                <Ellipse x:Name="LoadChipDot"
-                                         Width="5"
-                                         Height="5"
-                                         Fill="{StaticResource WarningBrush}"
-                                         VerticalAlignment="Center"
-                                         Margin="0,0,4,0" />
+                                <TextBlock x:Name="LoadChipIcon"
+                                           Text="&#xE9D9;"
+                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                           FontSize="10"
+                                           Foreground="{StaticResource WarningBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,4,0" />
                                 <TextBlock x:Name="LoadChipText"
                                            Text="Нагрузка"
                                            FontSize="9"
@@ -386,20 +390,23 @@
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource AccentBrush}" />
                         </Border>
-                        <Ellipse x:Name="CompactLiveDot"
-                                 Width="5"
-                                 Height="5"
-                                 Fill="{StaticResource WarningBrush}"
-                                 Margin="7,0,0,0"
-                                 VerticalAlignment="Center" />
-                        <Ellipse x:Name="CompactLoadDot"
-                                 Width="5"
-                                 Height="5"
-                                 Fill="{StaticResource WarningBrush}"
-                                 Margin="5,0,0,0"
-                                 VerticalAlignment="Center"
-                                 Visibility="Collapsed"
-                                 ToolTip="Состояние OpenCode" />
+                        <TextBlock x:Name="CompactLiveIcon"
+                                   Text="&#xE701;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="9"
+                                   Foreground="{StaticResource WarningBrush}"
+                                   Margin="7,0,0,0"
+                                   VerticalAlignment="Center"
+                                   ToolTip="Подключение к opencode.ai" />
+                        <TextBlock x:Name="CompactLoadIcon"
+                                   Text="&#xE9D9;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="9"
+                                   Foreground="{StaticResource WarningBrush}"
+                                   Margin="5,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Visibility="Collapsed"
+                                   ToolTip="Нагрузка OpenCode" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -585,21 +592,41 @@
 
                 <StackPanel Grid.Column="3"
                             Orientation="Horizontal"
-                            Margin="10,0,4,0"
+                            Margin="10,0,2,0"
                             VerticalAlignment="Center">
-                    <Ellipse x:Name="TaskbarLoadDot"
-                             Width="5"
-                             Height="5"
-                             Fill="{StaticResource WarningBrush}"
-                             Margin="0,0,6,0"
-                             VerticalAlignment="Center"
-                             Visibility="Collapsed"
-                             ToolTip="Состояние OpenCode" />
-                    <Ellipse x:Name="TaskbarLiveDot"
-                             Width="5"
-                             Height="5"
-                             Fill="{StaticResource WarningBrush}"
-                             VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                ToolTip="Подключение к opencode.ai">
+                        <TextBlock x:Name="TaskbarNetIcon"
+                                   Text="&#xE701;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="10"
+                                   Foreground="{StaticResource WarningBrush}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="TaskbarNetLabel"
+                                   Text="сеть"
+                                   FontSize="8"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="3,0,0,0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                ToolTip="Нагрузка OpenCode">
+                        <TextBlock x:Name="TaskbarLoadIcon"
+                                   Text="&#xE9D9;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="10"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="TaskbarLoadLabel"
+                                   Text="нагрузка"
+                                   FontSize="8"
+                                   Foreground="{StaticResource MutedBrush}"
+                                   Margin="3,0,0,0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
