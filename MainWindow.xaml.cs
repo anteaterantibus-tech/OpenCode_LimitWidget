@@ -25,6 +25,13 @@ public partial class MainWindow : Window
         Console,
     }
 
+    private enum LoadLevel
+    {
+        Ok,
+        Degraded,
+        Outage,
+    }
+
     private const double NormalWindowWidth = 412;
     private const double CompactWindowWidth = 332;
     private const double TaskbarBarWidth = 300;
@@ -60,8 +67,10 @@ public partial class MainWindow : Window
     private readonly ForegroundWatcher _foregroundWatcher;
 
     private GoApiClient _api;
+    private readonly StatusApiClient _statusApi = new();
     private CancellationTokenSource? _refreshCts;
     private GoSnapshot? _lastSnapshot;
+    private string? _loadSummary;
     private ErrorAction _errorAction = ErrorAction.Retry;
     private int _refreshGeneration;
     private bool _refreshing;
@@ -216,10 +225,14 @@ public partial class MainWindow : Window
         {
             var status = await _api.GetStatusAsync(token);
             var activity = await _api.GetActivityAsync(token);
+            var serviceStatus = await _statusApi.GetAsync(token);
             token.ThrowIfCancellationRequested();
 
             if (generation != _refreshGeneration)
                 return;
+
+            if (serviceStatus is not null)
+                ApplyServiceStatus(serviceStatus);
 
             var snapshot = new GoSnapshot
             {
@@ -377,7 +390,9 @@ public partial class MainWindow : Window
             TaskbarFiveHour.Text = "-";
             TaskbarWeek.Text = "-";
             TaskbarMonth.Text = "-";
-            TaskbarCard.ToolTip = "OpenCode Go";
+            TaskbarCard.ToolTip = string.IsNullOrEmpty(_loadSummary)
+                ? "OpenCode Go"
+                : "OpenCode Go\n" + _loadSummary;
             return;
         }
 
@@ -385,10 +400,109 @@ public partial class MainWindow : Window
         TaskbarWeek.Text = FormatShortPercent(meters.Week?.Percent);
         TaskbarMonth.Text = FormatShortPercent(meters.Month?.Percent);
 
-        TaskbarCard.ToolTip =
+        var tooltip =
             $"OpenCode Go · 5ч {TaskbarFiveHour.Text} ({FormatMeterUsd(meters.FiveHour)}) · " +
             $"нед {TaskbarWeek.Text} ({FormatMeterUsd(meters.Week)}) · " +
             $"мес {TaskbarMonth.Text} ({FormatMeterUsd(meters.Month)})";
+
+        if (!string.IsNullOrEmpty(_loadSummary))
+            tooltip += "\n" + _loadSummary;
+
+        TaskbarCard.ToolTip = tooltip;
+    }
+
+    private void ApplyServiceStatus(ServiceStatusResponse status)
+    {
+        var go = status.Components.FirstOrDefault(c =>
+            string.Equals(c.Service, "go", StringComparison.OrdinalIgnoreCase));
+
+        var state = go?.Status;
+        if (string.IsNullOrWhiteSpace(state))
+            state = status.Status;
+
+        var level = state?.Trim().ToLowerInvariant() switch
+        {
+            "outage" => LoadLevel.Outage,
+            "degraded" => LoadLevel.Degraded,
+            _ => LoadLevel.Ok,
+        };
+
+        if (level == LoadLevel.Ok)
+        {
+            _loadSummary = null;
+            SetLoadVisible(false, LoadLevel.Ok, null);
+            return;
+        }
+
+        var reason = ReasonText(go?.Reason);
+        var models = go?.Models?
+            .Select(m => FriendlyModel(m.Id))
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray() ?? [];
+
+        var lines = new List<string>
+        {
+            level == LoadLevel.Outage
+                ? "OpenCode Go: сбой"
+                : "OpenCode Go: повышенная нагрузка",
+        };
+
+        if (reason.Length > 0)
+            lines.Add("Причина: " + reason);
+
+        if (models.Length > 0)
+            lines.Add("Модели: " + string.Join(", ", models));
+
+        if (status.Stale)
+            lines.Add("Данные статуса могли устареть");
+
+        lines.Add("Обновлено: " + DateTimeOffset.Now.ToString("HH:mm", Ru));
+
+        _loadSummary = $"Нагрузка: {reason}";
+        SetLoadVisible(true, level, string.Join("\n", lines));
+    }
+
+    private void SetLoadVisible(bool visible, LoadLevel level, string? tooltip)
+    {
+        var visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+
+        LoadChip.Visibility = visibility;
+        CompactLoadDot.Visibility = visibility;
+        TaskbarLoadDot.Visibility = visibility;
+
+        var brush = (Brush)FindResource(level == LoadLevel.Outage ? "DangerBrush" : "WarningBrush");
+
+        LoadChipDot.Fill = brush;
+        CompactLoadDot.Fill = brush;
+        TaskbarLoadDot.Fill = brush;
+
+        if (brush is SolidColorBrush solid)
+        {
+            var color = solid.Color;
+            LoadChip.Background = new SolidColorBrush(Color.FromArgb(0x2E, color.R, color.G, color.B));
+            LoadChip.BorderBrush = new SolidColorBrush(Color.FromArgb(0x66, color.R, color.G, color.B));
+        }
+
+        LoadChipText.Text = level == LoadLevel.Outage ? "Сбой" : "Нагрузка";
+        LoadChipText.Foreground = brush;
+
+        LoadChip.ToolTip = tooltip;
+        CompactLoadDot.ToolTip = tooltip;
+        TaskbarLoadDot.ToolTip = tooltip;
+    }
+
+    private static string ReasonText(string? reason)
+    {
+        return reason?.Trim().ToLowerInvariant() switch
+        {
+            "upstream" => "проблема на стороне провайдера",
+            "latency" => "повышенные задержки",
+            "errors" => "ошибки запросов",
+            "availability" => "недоступность",
+            "none" or null or "" => "",
+            _ => reason!,
+        };
     }
 
     private static string FormatMeterUsd(GoMeter? meter)
@@ -1237,6 +1351,23 @@ public partial class MainWindow : Window
     private void ConsoleLink_Click(object sender, RoutedEventArgs e)
     {
         OpenConsole();
+    }
+
+    private void StatusChip_Click(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo("https://status.opencode.ai")
+            {
+                UseShellExecute = true,
+            });
+        }
+        catch
+        {
+            // No browser available; ignore.
+        }
     }
 
     private static void OpenConsole()

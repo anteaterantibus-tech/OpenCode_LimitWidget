@@ -156,12 +156,41 @@
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center" />
                     </StackPanel>
-                    <TextBlock x:Name="UpdatedText"
-                               Text=""
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               FontSize="9.5"
-                               Foreground="{StaticResource FaintBrush}" />
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <Border x:Name="LoadChip"
+                                Visibility="Collapsed"
+                                CornerRadius="6"
+                                Background="#2EFFB020"
+                                BorderBrush="#66FFB020"
+                                BorderThickness="1"
+                                Padding="6,1"
+                                Margin="0,0,7,0"
+                                Cursor="Hand"
+                                MouseLeftButtonUp="StatusChip_Click"
+                                ToolTip="Состояние OpenCode">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="LoadChipDot"
+                                         Width="5"
+                                         Height="5"
+                                         Fill="{StaticResource WarningBrush}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,4,0" />
+                                <TextBlock x:Name="LoadChipText"
+                                           Text="Нагрузка"
+                                           FontSize="9"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource WarningBrush}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock x:Name="UpdatedText"
+                                   Text=""
+                                   VerticalAlignment="Center"
+                                   FontSize="9.5"
+                                   Foreground="{StaticResource FaintBrush}" />
+                    </StackPanel>
                 </Grid>
 
                 <!-- Error / empty state -->
@@ -363,6 +392,14 @@
                                  Fill="{StaticResource WarningBrush}"
                                  Margin="7,0,0,0"
                                  VerticalAlignment="Center" />
+                        <Ellipse x:Name="CompactLoadDot"
+                                 Width="5"
+                                 Height="5"
+                                 Fill="{StaticResource WarningBrush}"
+                                 Margin="5,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Visibility="Collapsed"
+                                 ToolTip="Состояние OpenCode" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -546,13 +583,24 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Ellipse x:Name="TaskbarLiveDot"
-                         Grid.Column="3"
-                         Width="5"
-                         Height="5"
-                         Fill="{StaticResource WarningBrush}"
-                         Margin="10,0,4,0"
-                         VerticalAlignment="Center" />
+                <StackPanel Grid.Column="3"
+                            Orientation="Horizontal"
+                            Margin="10,0,4,0"
+                            VerticalAlignment="Center">
+                    <Ellipse x:Name="TaskbarLoadDot"
+                             Width="5"
+                             Height="5"
+                             Fill="{StaticResource WarningBrush}"
+                             Margin="0,0,6,0"
+                             VerticalAlignment="Center"
+                             Visibility="Collapsed"
+                             ToolTip="Состояние OpenCode" />
+                    <Ellipse x:Name="TaskbarLiveDot"
+                             Width="5"
+                             Height="5"
+                             Fill="{StaticResource WarningBrush}"
+                             VerticalAlignment="Center" />
+                </StackPanel>
             </Grid>
         </Border>
 
