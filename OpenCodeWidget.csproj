@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>OpenCodeWidget</RootNamespace>
+    <AssemblyName>OpenCodeWidget</AssemblyName>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- github/ is a separate clean copy of the project for publishing. -->
+  <ItemGroup>
+    <Compile Remove="github\**" />
+    <Page Remove="github\**" />
+    <ApplicationDefinition Remove="github\**" />
+    <Resource Remove="github\**" />
+    <None Remove="github\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="app.ico" />
+    <Resource Include="assets\logo.png" />
+    <Resource Include="assets\sounds\soft.wav" />
+    <Resource Include="assets\sounds\bell.wav" />
+    <Resource Include="assets\sounds\wood.wav" />
+    <Resource Include="assets\sounds\drop.wav" />
+    <Resource Include="assets\sounds\minimal.wav" />
+  </ItemGroup>
+
+</Project>
