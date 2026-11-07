@@ -71,7 +71,13 @@ public partial class App : Application
                 "OpenCodeWidget");
             Directory.CreateDirectory(dir);
             var text = $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}] {ex}{Environment.NewLine}{Environment.NewLine}";
-            File.AppendAllText(Path.Combine(dir, "error.log"), text, Encoding.UTF8);
+            var path = Path.Combine(dir, "error.log");
+
+            // Keep the log from growing without bound during long network outages.
+            if (File.Exists(path) && new FileInfo(path).Length > 1_000_000)
+                File.Delete(path);
+
+            File.AppendAllText(path, text, Encoding.UTF8);
         }
         catch
         {

@@ -37,6 +37,10 @@ public partial class MainWindow : Window
     private const double TaskbarBarWidth = 380;
     private const double TaskbarBarHeight = 36;
 
+    private static readonly TimeSpan NetworkRetryInterval = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan RateLimitRetryInterval = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan ServerRetryInterval = TimeSpan.FromSeconds(15);
+
     private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
 
     private static readonly Dictionary<string, string> ModelNames = new(StringComparer.OrdinalIgnoreCase)
@@ -173,10 +177,18 @@ public partial class MainWindow : Window
         await RefreshAsync();
     }
 
+    private TimeSpan NormalRefreshInterval =>
+        TimeSpan.FromSeconds(Math.Clamp(_settings.RefreshSeconds, 30, 3600));
+
+    private void ResetRefreshInterval()
+    {
+        _refreshTimer.Interval = NormalRefreshInterval;
+    }
+
     private void ApplySettings()
     {
         Topmost = _settings.TaskbarMode || _settings.AlwaysOnTop;
-        _refreshTimer.Interval = TimeSpan.FromSeconds(Math.Clamp(_settings.RefreshSeconds, 30, 3600));
+        _refreshTimer.Interval = NormalRefreshInterval;
         _refreshTimer.Start();
         _api = new GoApiClient(_store.GetApiKey(_settings) ?? "");
         FooterText.Text = "Автообновление: " + FormatInterval(_settings.RefreshSeconds);
@@ -246,6 +258,7 @@ public partial class MainWindow : Window
             ApplySnapshot(snapshot, cached: false);
             EvaluateLimitAlerts(snapshot);
             SetLive(true);
+            ResetRefreshInterval();
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
@@ -266,6 +279,7 @@ public partial class MainWindow : Window
                     ErrorAction.Retry,
                     "Ошибка обновления");
                 SetLive(false);
+                _refreshTimer.Interval = ServerRetryInterval;
             }
         }
         finally
@@ -568,7 +582,16 @@ public partial class MainWindow : Window
 
     private void HandleApiError(GoApiException exception)
     {
+        App.Log(exception);
         SetLive(false);
+
+        _refreshTimer.Interval = exception.Kind switch
+        {
+            GoApiErrorKind.Unauthorized => NormalRefreshInterval,
+            GoApiErrorKind.RateLimited => RateLimitRetryInterval,
+            GoApiErrorKind.Network => NetworkRetryInterval,
+            _ => ServerRetryInterval,
+        };
 
         switch (exception.Kind)
         {
