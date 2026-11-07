@@ -23,8 +23,10 @@
 ## Скачать
 
 Готовый файл: [последний релиз](https://github.com/anteaterantibus-tech/OpenCode_LimitWidget/releases/latest).
-`OpenCodeWidget.exe` требует установленный .NET 9 Desktop Runtime. Если .NET нет,
-соберите self-contained версию командой из раздела ниже.
+
+- `OpenCodeWidget.exe` (около 2 МБ) требует установленный .NET 9 Desktop Runtime.
+- `OpenCodeWidget-self-contained.exe` (около 147 МБ) работает без установленного .NET,
+  но первый запуск чуть дольше из-за распаковки.
 
 ## Чем отличается
 
