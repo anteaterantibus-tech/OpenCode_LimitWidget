@@ -32,13 +32,16 @@ public sealed class LoadForecast
         ServiceStatusResponse? status,
         DateTimeOffset now,
         int days = 14,
-        int windowHours = 6)
+        int windowHours = 6,
+        string? modelId = null)
     {
         if (status?.Incidents is not { Count: > 0 })
             return null;
 
         var go = status.Incidents
             .Where(i => string.Equals(i.Service, "go", StringComparison.OrdinalIgnoreCase))
+            .Where(i => modelId is null || i.Models.Any(m =>
+                string.Equals(m.Id, modelId, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
 
         if (go.Length == 0)

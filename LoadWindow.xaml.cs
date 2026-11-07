@@ -12,13 +12,41 @@ public partial class LoadWindow : Window
 {
     private const double ChartHeight = 92;
 
-    public LoadWindow(ServiceStatusResponse status, LoadForecast forecast)
+    private readonly LoadForecast _overall;
+    private readonly LoadForecast? _model;
+    private readonly string? _modelName;
+
+    public LoadWindow(
+        ServiceStatusResponse status,
+        LoadForecast overall,
+        LoadForecast? model,
+        string? modelName)
     {
+        _overall = overall;
+        _model = model;
+        _modelName = modelName;
+
         InitializeComponent();
 
         ApplyState(status);
-        BuildChart(forecast);
-        ApplyForecast(forecast);
+
+        if (_model is null || string.IsNullOrWhiteSpace(_modelName))
+        {
+            ScopePanel.Visibility = Visibility.Collapsed;
+            ShowForecast(_overall, "все модели Go", isModel: false);
+        }
+        else
+        {
+            ScopeModel.IsChecked = true;
+        }
+    }
+
+    private void Scope_Changed(object sender, RoutedEventArgs e)
+    {
+        if (ScopeModel.IsChecked == true && _model is not null)
+            ShowForecast(_model, _modelName ?? "моя модель", isModel: true);
+        else
+            ShowForecast(_overall, "все модели Go", isModel: false);
     }
 
     private void ApplyState(ServiceStatusResponse status)
@@ -70,8 +98,30 @@ public partial class LoadWindow : Window
         StateDetail.Text = detail;
     }
 
+    private void ShowForecast(LoadForecast forecast, string scope, bool isModel)
+    {
+        ChartCaption.Text = "Нагрузка по часам · " + scope;
+
+        BuildChart(forecast);
+
+        SummaryText.Text = forecast.HasPattern
+            ? $"Пик: {forecast.PeakRange}. Спокойнее: {forecast.QuietRange}."
+            : "Выраженного суточного пика нет: нагрузка появляется в разное время.";
+
+        var scopeNote = isModel
+            ? "Оценка по инцидентам Go, где затронута эта модель"
+            : "Оценка по всем инцидентам Go";
+
+        NoteText.Text =
+            $"{scopeNote} за {forecast.Days} дн. " +
+            "Это не официальный прогноз, а статистика прошлых сбоев.";
+    }
+
     private void BuildChart(LoadForecast forecast)
     {
+        ChartGrid.Children.Clear();
+        ChartGrid.ColumnDefinitions.Clear();
+
         for (var hour = 0; hour < 24; hour++)
             ChartGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
@@ -100,17 +150,6 @@ public partial class LoadWindow : Window
             ChartGrid.Children.Add(host);
             Grid.SetColumn(host, hour);
         }
-    }
-
-    private void ApplyForecast(LoadForecast forecast)
-    {
-        SummaryText.Text = forecast.HasPattern
-            ? $"Пик: {forecast.PeakRange}. Спокойнее: {forecast.QuietRange}."
-            : "Выраженного суточного пика нет: нагрузка появляется в разное время.";
-
-        NoteText.Text =
-            $"Оценка по истории status.opencode.ai за {forecast.Days} дн. " +
-            "Это не официальный прогноз, а статистика прошлых сбоев.";
     }
 
     private static string ReasonText(string? reason)

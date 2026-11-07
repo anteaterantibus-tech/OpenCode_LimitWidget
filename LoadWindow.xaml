@@ -96,12 +96,36 @@
                 </StackPanel>
             </Border>
 
-            <!-- Chart title -->
-            <TextBlock Grid.Row="2"
-                       Text="Доля времени с нагрузкой по часам"
-                       FontSize="10.5"
-                       Foreground="{StaticResource MutedBrush}"
-                       Margin="0,16,0,0" />
+            <!-- Chart title and scope -->
+            <Grid Grid.Row="2" Margin="0,14,0,0">
+                <TextBlock x:Name="ChartCaption"
+                           Text="Нагрузка по часам"
+                           FontSize="10.5"
+                           Foreground="{StaticResource MutedBrush}"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="0,0,150,0" />
+                <StackPanel x:Name="ScopePanel"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <RadioButton x:Name="ScopeModel"
+                                 Style="{StaticResource PillRadio}"
+                                 GroupName="Scope"
+                                 Content="Моя модель"
+                                 Height="28"
+                                 FontSize="9.5"
+                                 Checked="Scope_Changed" />
+                    <RadioButton x:Name="ScopeGo"
+                                 Style="{StaticResource PillRadio}"
+                                 GroupName="Scope"
+                                 Content="Весь Go"
+                                 Height="28"
+                                 FontSize="9.5"
+                                 Margin="6,0,0,0"
+                                 Checked="Scope_Changed" />
+                </StackPanel>
+            </Grid>
 
             <!-- Chart -->
             <Border Grid.Row="3"

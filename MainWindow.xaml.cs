@@ -77,6 +77,8 @@ public partial class MainWindow : Window
     private string? _loadSummary;
     private ServiceStatusResponse? _lastServiceStatus;
     private LoadForecast? _lastForecast;
+    private LoadForecast? _modelForecast;
+    private string? _focusModel;
     private LoadWindow? _loadWindow;
     private ErrorAction _errorAction = ErrorAction.Retry;
     private int _refreshGeneration;
@@ -247,7 +249,7 @@ public partial class MainWindow : Window
                 return;
 
             if (serviceStatus is not null)
-                ApplyServiceStatus(serviceStatus);
+                ApplyServiceStatus(serviceStatus, activity);
 
             var snapshot = new GoSnapshot
             {
@@ -428,10 +430,19 @@ public partial class MainWindow : Window
         TaskbarCard.ToolTip = tooltip;
     }
 
-    private void ApplyServiceStatus(ServiceStatusResponse status)
+    private void ApplyServiceStatus(ServiceStatusResponse status, GoActivityResponse? activity)
     {
         _lastServiceStatus = status;
+        _focusModel = activity?.Models?
+            .Where(m => !string.IsNullOrWhiteSpace(m.Model))
+            .OrderByDescending(m => m.TotalRequests)
+            .Select(m => m.Model)
+            .FirstOrDefault();
+
         _lastForecast = LoadForecast.Build(status, DateTimeOffset.Now);
+        _modelForecast = _focusModel is null
+            ? null
+            : LoadForecast.Build(status, DateTimeOffset.Now, modelId: _focusModel);
 
         var go = status.Components.FirstOrDefault(c =>
             string.Equals(c.Service, "go", StringComparison.OrdinalIgnoreCase));
@@ -504,12 +515,17 @@ public partial class MainWindow : Window
 
     private string? ForecastText()
     {
-        if (_lastForecast is not { } forecast)
+        var forecast = _modelForecast ?? _lastForecast;
+        if (forecast is null)
             return null;
 
+        var prefix = _modelForecast is not null && _focusModel is not null
+            ? FriendlyModel(_focusModel) + ": "
+            : "";
+
         return forecast.HasPattern
-            ? $"Пик {forecast.PeakRange}, спокойнее {forecast.QuietRange}"
-            : "выраженного пика по часам нет";
+            ? $"{prefix}пик {forecast.PeakRange}, спокойнее {forecast.QuietRange}"
+            : $"{prefix}выраженного пика по часам нет";
     }
 
     private void ApplyLoadState(LoadLevel level, string? tooltip)
@@ -1444,7 +1460,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        _loadWindow = new LoadWindow(_lastServiceStatus, _lastForecast)
+        var modelName = string.IsNullOrWhiteSpace(_focusModel)
+            ? null
+            : FriendlyModel(_focusModel);
+
+        _loadWindow = new LoadWindow(_lastServiceStatus, _lastForecast, _modelForecast, modelName)
         {
             Owner = this,
         };
