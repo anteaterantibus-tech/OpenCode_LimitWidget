@@ -25,7 +25,7 @@ public partial class LimitToastWindow : Window
         MessageText.Text = text;
 
         var brush = (Brush)FindResource(level >= 90 ? "DangerBrush" : "WarningBrush");
-        Card.BorderBrush = brush;
+        Card.Background = brush;
         ProgressFill.Background = brush;
 
         Position(mainWindowRect, fallbackWidth);

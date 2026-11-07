@@ -33,10 +33,12 @@
 
         <Border x:Name="Card"
                 CornerRadius="14"
-                Background="{StaticResource CardBrush}"
-                BorderBrush="{StaticResource WarningBrush}"
-                BorderThickness="1"
-                TextElement.Foreground="{StaticResource TextBrush}">
+                Background="{StaticResource WarningBrush}">
+            <Border x:Name="CardInner"
+                    CornerRadius="12"
+                    Background="{StaticResource CardBrush}"
+                    Margin="2"
+                    TextElement.Foreground="{StaticResource TextBrush}">
 
         <Grid Margin="10,8,10,8">
             <Grid.RowDefinitions>
@@ -99,6 +101,7 @@
                 </Border>
             </Border>
         </Grid>
+            </Border>
         </Border>
     </Grid>
 </Window>
