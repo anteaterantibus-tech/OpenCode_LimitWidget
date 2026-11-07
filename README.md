@@ -20,6 +20,30 @@
 
 ![Режим панели задач](docs/preview-taskbar.png)
 
+## Скачать
+
+Готовый файл: [последний релиз](https://github.com/anteaterantibus-tech/OpenCode_LimitWidget/releases/latest).
+`OpenCodeWidget.exe` требует установленный .NET 9 Desktop Runtime. Если .NET нет,
+соберите self-contained версию командой из раздела ниже.
+
+## Чем отличается
+
+- Нативный Windows/WPF, один exe, без Electron и без входа через браузер.
+- Три режима, включая полосу в панели задач Windows 11.
+- Фокус на OpenCode Go: 5 часов, неделя, месяц, сбросы и статистика за сегодня.
+- Официальный статус OpenCode и прогноз нагрузки по часам.
+- Цвет индикаторов от зелёного к красному по остатку лимита.
+- Уведомления со звуком, автоскрытие в полноэкранных приложениях, ключ в DPAPI.
+- Никакой телеметрии.
+
+## Похожие проекты
+
+- [CodeZeno/Claude-Code-Usage-Monitor](https://github.com/CodeZeno/Claude-Code-Usage-Monitor) - виджет в панели задач Windows для Claude Code, Codex, Cursor и OpenCode Go.
+- [slkiser/opencode-quota](https://github.com/slkiser/opencode-quota) - квоты, расход и стоимость OpenCode прямо в TUI и Desktop.
+- [Javis603/token-monitor](https://github.com/Javis603/token-monitor) - кроссплатформенный дашборд по 52+ инструментам.
+- [ikunops/opencode-widget](https://github.com/ikunops/opencode-widget) - плавающее окно с квотами OpenCode Go и разбивкой по моделям.
+- [bozdemir/claude-usage-widget](https://github.com/bozdemir/claude-usage-widget) - кроссплатформенный OSD с прогнозами и burn-алертами для Claude и Codex.
+
 ## Что показывает
 
 - Три кольца с процентами использованной квоты: 5 часов, неделя, месяц.
@@ -74,7 +98,7 @@ dotnet run
 
 Готовый файл появится в `dist\OpenCodeWidget.exe`.
 На компьютере без установленного .NET 9 используйте self-contained команду из раздела ниже.
-Собранный exe также можно скачать из артефактов GitHub Actions.
+Готовый exe также можно скачать из [последнего релиза](https://github.com/anteaterantibus-tech/OpenCode_LimitWidget/releases/latest).
 
 ## Первый запуск и ключ
 
@@ -164,6 +188,8 @@ OpenCode Console -> Account -> Personal API keys
 Виджет можно закрепить в свободной левой части панели задач Windows 11.
 Переключение: правый клик по виджету и пункт «В панели задач» или то же самое в меню трея.
 Двойной клик по полосе возвращает обычный вид.
+
+![Демонстрация полосы в панели задач](docs/taskbar-demo.gif)
 
 Это отдельное topmost-окно поверх панели задач, а не системный deskband:
 Windows 11 не поддерживает сторонние deskband. Режим рассчитан на панель задач снизу
