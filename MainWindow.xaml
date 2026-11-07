@@ -406,6 +406,8 @@
                                    Margin="5,0,0,0"
                                    VerticalAlignment="Center"
                                    Visibility="Collapsed"
+                                   Cursor="Hand"
+                                   MouseLeftButtonUp="LoadGroup_Click"
                                    ToolTip="Нагрузка OpenCode" />
                     </StackPanel>
 
@@ -613,6 +615,8 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center"
+                                Cursor="Hand"
+                                MouseLeftButtonUp="LoadGroup_Click"
                                 ToolTip="Нагрузка OpenCode">
                         <TextBlock x:Name="TaskbarLoadIcon"
                                    Text="&#xE9D9;"

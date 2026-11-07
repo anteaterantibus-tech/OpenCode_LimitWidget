@@ -75,6 +75,9 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _refreshCts;
     private GoSnapshot? _lastSnapshot;
     private string? _loadSummary;
+    private ServiceStatusResponse? _lastServiceStatus;
+    private LoadForecast? _lastForecast;
+    private LoadWindow? _loadWindow;
     private ErrorAction _errorAction = ErrorAction.Retry;
     private int _refreshGeneration;
     private bool _refreshing;
@@ -427,6 +430,9 @@ public partial class MainWindow : Window
 
     private void ApplyServiceStatus(ServiceStatusResponse status)
     {
+        _lastServiceStatus = status;
+        _lastForecast = LoadForecast.Build(status, DateTimeOffset.Now);
+
         var go = status.Components.FirstOrDefault(c =>
             string.Equals(c.Service, "go", StringComparison.OrdinalIgnoreCase));
 
@@ -441,10 +447,20 @@ public partial class MainWindow : Window
             _ => LoadLevel.Ok,
         };
 
+        var forecast = ForecastText();
+
         if (level == LoadLevel.Ok)
         {
             _loadSummary = "Нагрузка: в норме";
-            ApplyLoadState(LoadLevel.Ok, "OpenCode Go: нагрузка в норме");
+            var okTooltip = "OpenCode Go: нагрузка в норме";
+
+            if (forecast is not null)
+            {
+                _loadSummary += "\n" + forecast;
+                okTooltip += "\n" + forecast;
+            }
+
+            ApplyLoadState(LoadLevel.Ok, okTooltip);
             return;
         }
 
@@ -468,6 +484,9 @@ public partial class MainWindow : Window
         if (models.Length > 0)
             lines.Add("Модели: " + string.Join(", ", models));
 
+        if (forecast is not null)
+            lines.Add("Прогноз: " + forecast);
+
         if (status.Stale)
             lines.Add("Данные статуса могли устареть");
 
@@ -477,7 +496,20 @@ public partial class MainWindow : Window
             ? "Нагрузка: сбой"
             : $"Нагрузка: {(reason.Length > 0 ? reason : "повышена")}";
 
+        if (forecast is not null)
+            _loadSummary += "\nПрогноз: " + forecast;
+
         ApplyLoadState(level, string.Join("\n", lines));
+    }
+
+    private string? ForecastText()
+    {
+        if (_lastForecast is not { } forecast)
+            return null;
+
+        return forecast.HasPattern
+            ? $"Пик {forecast.PeakRange}, спокойнее {forecast.QuietRange}"
+            : "выраженного пика по часам нет";
     }
 
     private void ApplyLoadState(LoadLevel level, string? tooltip)
@@ -1389,7 +1421,40 @@ public partial class MainWindow : Window
     private void StatusChip_Click(object sender, MouseButtonEventArgs e)
     {
         e.Handled = true;
+        OpenLoadWindow();
+    }
 
+    private void LoadGroup_Click(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+        OpenLoadWindow();
+    }
+
+    private void OpenLoadWindow()
+    {
+        if (_lastServiceStatus is null || _lastForecast is null)
+        {
+            OpenStatusPage();
+            return;
+        }
+
+        if (_loadWindow is { IsVisible: true })
+        {
+            _loadWindow.Activate();
+            return;
+        }
+
+        _loadWindow = new LoadWindow(_lastServiceStatus, _lastForecast)
+        {
+            Owner = this,
+        };
+
+        _loadWindow.Closed += (_, _) => _loadWindow = null;
+        _loadWindow.Show();
+    }
+
+    private static void OpenStatusPage()
+    {
         try
         {
             Process.Start(new ProcessStartInfo("https://status.opencode.ai")
@@ -1548,7 +1613,7 @@ public partial class MainWindow : Window
         return $"{seconds / 3600} ч";
     }
 
-    private static string FriendlyModel(string model)
+    internal static string FriendlyModel(string model)
     {
         if (string.IsNullOrWhiteSpace(model))
             return "";
