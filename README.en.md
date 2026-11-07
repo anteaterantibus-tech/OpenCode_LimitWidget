@@ -158,14 +158,14 @@ and looks at the `go` service.
 
 ![Load indicator](docs/preview-load.png)
 
-- When everything is fine, the indicator is hidden.
+- When everything is fine, the indicator is green.
 - On degradation an amber Load chip appears next to the renewal date.
 - On an outage the chip turns red and shows Outage.
 - In compact mode an activity icon appears next to the logo.
 - In the taskbar there are two labeled icons: net (connection) and load (OpenCode state).
 
 The Wi-Fi icon shows connectivity: green means data is refreshing, red means no connection.
-The activity icon shows load: gray is normal, amber is degraded, red is an outage.
+The activity icon shows load: green is normal, amber is degraded, red is an outage.
 
 Hover the chip to see the reason (latency, errors, provider-side issue) and the affected models.
 Click it to open the load forecast window.

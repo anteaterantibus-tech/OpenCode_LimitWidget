@@ -570,22 +570,20 @@ public partial class MainWindow : Window
 
     private void ApplyLoadState(LoadLevel level, string? tooltip)
     {
-        var degraded = level != LoadLevel.Ok;
-
-        LoadChip.Visibility = degraded ? Visibility.Visible : Visibility.Collapsed;
-        CompactLoadIcon.Visibility = degraded ? Visibility.Visible : Visibility.Collapsed;
+        LoadChip.Visibility = Visibility.Visible;
+        CompactLoadIcon.Visibility = Visibility.Visible;
 
         var brush = level switch
         {
             LoadLevel.Outage => (Brush)FindResource("DangerBrush"),
             LoadLevel.Degraded => (Brush)FindResource("WarningBrush"),
-            _ => (Brush)FindResource("MutedBrush"),
+            _ => (Brush)FindResource("SuccessBrush"),
         };
 
         LoadChipIcon.Foreground = brush;
         CompactLoadIcon.Foreground = brush;
         TaskbarLoadIcon.Foreground = brush;
-        TaskbarLoadLabel.Foreground = degraded ? brush : (Brush)FindResource("MutedBrush");
+        TaskbarLoadLabel.Foreground = brush;
 
         LoadChipText.Text = Loc.Get(level == LoadLevel.Outage ? "Outage" : "Load");
         LoadChipText.Foreground = brush;
