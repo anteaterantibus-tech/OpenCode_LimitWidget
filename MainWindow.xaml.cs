@@ -1196,8 +1196,20 @@ public partial class MainWindow : Window
         var barHeight = Math.Min(TaskbarBarHeight, taskbar.Height - 8);
         var barWidth = Math.Min(TaskbarBarWidth, taskbar.Width - 24);
 
+        var left = taskbar.Left + 12;
+        if (!TaskbarLocator.IsWindows11)
+        {
+            // Windows 10 keeps app icons on the left, so use the free space near the tray.
+            var trayLeft = TaskbarLocator.GetTrayLeft(taskbar.Handle);
+            var effectiveWidth = ActualWidth > 0 ? ActualWidth : barWidth;
+
+            left = trayLeft is { } tray
+                ? Math.Max(taskbar.Left + 12, tray - effectiveWidth - 8)
+                : taskbar.Left + taskbar.Width - effectiveWidth - 220;
+        }
+
         SetTaskbarBounds(
-            taskbar.Left + 12,
+            left,
             taskbar.Top + (taskbar.Height - barHeight) / 2,
             barHeight,
             barWidth);

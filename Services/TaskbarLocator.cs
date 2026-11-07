@@ -20,6 +20,13 @@ public static class TaskbarLocator
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern IntPtr FindWindow(string? className, string? windowName);
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr FindWindowEx(
+        IntPtr parent,
+        IntPtr childAfter,
+        string? className,
+        string? windowName);
+
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
 
@@ -67,6 +74,19 @@ public static class TaskbarLocator
         public RECT rcMonitor;
         public RECT rcWork;
         public uint dwFlags;
+    }
+
+    public static bool IsWindows11 => Environment.OSVersion.Version.Build >= 22000;
+
+    public static double? GetTrayLeft(IntPtr taskbarHandle)
+    {
+        var tray = FindWindowEx(taskbarHandle, IntPtr.Zero, "TrayNotifyWnd", null);
+        if (tray == IntPtr.Zero || !GetWindowRect(tray, out var rect))
+            return null;
+
+        var dpi = GetDpiForWindow(taskbarHandle);
+        var scale = dpi == 0 ? 1.0 : dpi / 96.0;
+        return rect.Left / scale;
     }
 
     public static TaskbarInfo? GetPrimaryTaskbar()
