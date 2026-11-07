@@ -14,12 +14,6 @@ public partial class MiniMeter : UserControl
         typeof(MiniMeter),
         new PropertyMetadata(0d, OnValueChanged));
 
-    public static readonly DependencyProperty AccentProperty = DependencyProperty.Register(
-        nameof(Accent),
-        typeof(Brush),
-        typeof(MiniMeter),
-        new PropertyMetadata(Brushes.Gold, OnAccentChanged));
-
     private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
 
     public MiniMeter()
@@ -34,12 +28,6 @@ public partial class MiniMeter : UserControl
         set => SetValue(ValueProperty, value);
     }
 
-    public Brush Accent
-    {
-        get => (Brush)GetValue(AccentProperty);
-        set => SetValue(AccentProperty, value);
-    }
-
     public void SetData(double percent, string title, string resetText, string? tooltip = null)
     {
         Value = Math.Clamp(percent, 0, 100);
@@ -48,22 +36,9 @@ public partial class MiniMeter : UserControl
         PercentText.Text = FormatPercent(Value);
         ToolTip = tooltip;
 
-        var accent = Accent ?? Brushes.Gold;
-        var foreground = ResourceBrush("TextBrush");
-
-        if (Value >= 90)
-        {
-            accent = ResourceBrush("DangerBrush");
-            foreground = accent;
-        }
-        else if (Value >= 70)
-        {
-            accent = ResourceBrush("WarningBrush");
-            foreground = accent;
-        }
-
+        var accent = LimitPalette.BrushFor(Value);
         Fill.Background = accent;
-        PercentText.Foreground = foreground;
+        PercentText.Foreground = accent;
         UpdateFill();
     }
 
@@ -89,12 +64,6 @@ public partial class MiniMeter : UserControl
     {
         if (d is MiniMeter meter)
             meter.UpdateFill();
-    }
-
-    private static void OnAccentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is MiniMeter meter && e.NewValue is Brush brush && meter.Value < 70)
-            meter.Fill.Background = brush;
     }
 
     private static Brush ResourceBrush(string key)

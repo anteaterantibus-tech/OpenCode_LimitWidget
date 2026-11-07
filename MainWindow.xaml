@@ -237,14 +237,11 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <controls:RingMeter x:Name="FiveHourMeter"
-                                        Grid.Column="0"
-                                        Accent="{StaticResource RingFiveBrush}" />
+                                        Grid.Column="0" />
                     <controls:RingMeter x:Name="WeekMeter"
-                                        Grid.Column="1"
-                                        Accent="{StaticResource RingWeekBrush}" />
+                                        Grid.Column="1" />
                     <controls:RingMeter x:Name="MonthMeter"
-                                        Grid.Column="2"
-                                        Accent="{StaticResource RingMonthBrush}" />
+                                        Grid.Column="2" />
                 </Grid>
 
                 <Border Grid.Row="4"
@@ -457,15 +454,12 @@
                     </Grid.ColumnDefinitions>
                     <controls:MiniMeter x:Name="CompactFiveHour"
                                         Grid.Column="0"
-                                        Accent="{StaticResource RingFiveBrush}"
                                         Margin="0,0,8,0" />
                     <controls:MiniMeter x:Name="CompactWeek"
                                         Grid.Column="1"
-                                        Accent="{StaticResource RingWeekBrush}"
                                         Margin="0,0,8,0" />
                     <controls:MiniMeter x:Name="CompactMonth"
-                                        Grid.Column="2"
-                                        Accent="{StaticResource RingMonthBrush}" />
+                                        Grid.Column="2" />
                 </Grid>
 
                 <!-- Compact error -->

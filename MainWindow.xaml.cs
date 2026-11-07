@@ -409,6 +409,9 @@ public partial class MainWindow : Window
             TaskbarFiveHour.Text = "-";
             TaskbarWeek.Text = "-";
             TaskbarMonth.Text = "-";
+            TaskbarFiveHour.Foreground = (Brush)FindResource("TextBrush");
+            TaskbarWeek.Foreground = (Brush)FindResource("TextBrush");
+            TaskbarMonth.Foreground = (Brush)FindResource("TextBrush");
             TaskbarCard.ToolTip = string.IsNullOrEmpty(_loadSummary)
                 ? "OpenCode Go"
                 : "OpenCode Go\n" + _loadSummary;
@@ -419,6 +422,10 @@ public partial class MainWindow : Window
         TaskbarWeek.Text = FormatShortPercent(meters.Week?.Percent);
         TaskbarMonth.Text = FormatShortPercent(meters.Month?.Percent);
 
+        SetTaskbarMeterColor(TaskbarFiveHour, meters.FiveHour?.Percent);
+        SetTaskbarMeterColor(TaskbarWeek, meters.Week?.Percent);
+        SetTaskbarMeterColor(TaskbarMonth, meters.Month?.Percent);
+
         var tooltip =
             $"OpenCode Go · 5ч {TaskbarFiveHour.Text} ({FormatMeterUsd(meters.FiveHour)}) · " +
             $"нед {TaskbarWeek.Text} ({FormatMeterUsd(meters.Week)}) · " +
@@ -428,6 +435,13 @@ public partial class MainWindow : Window
             tooltip += "\n" + _loadSummary;
 
         TaskbarCard.ToolTip = tooltip;
+    }
+
+    private void SetTaskbarMeterColor(TextBlock text, double? percent)
+    {
+        text.Foreground = percent is { } value
+            ? LimitPalette.BrushFor(value)
+            : (Brush)FindResource("TextBrush");
     }
 
     private void ApplyServiceStatus(ServiceStatusResponse status, GoActivityResponse? activity)

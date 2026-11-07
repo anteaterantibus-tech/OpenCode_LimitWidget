@@ -20,9 +20,6 @@
             <SolidColorBrush x:Key="DangerBrush" Color="#FFFF6B6B" />
             <SolidColorBrush x:Key="InputBrush" Color="#B3101013" />
             <SolidColorBrush x:Key="InputBorderBrush" Color="#26FFFFFF" />
-            <SolidColorBrush x:Key="RingFiveBrush" Color="#FFF5C542" />
-            <SolidColorBrush x:Key="RingWeekBrush" Color="#FFFF9F0A" />
-            <SolidColorBrush x:Key="RingMonthBrush" Color="#FFFF714B" />
 
             <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#FFF8D66B" Offset="0" />

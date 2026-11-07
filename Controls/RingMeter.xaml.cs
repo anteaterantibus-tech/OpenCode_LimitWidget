@@ -9,24 +9,12 @@ namespace OpenCodeWidget.Controls;
 
 public partial class RingMeter : UserControl
 {
-    public static readonly DependencyProperty AccentProperty = DependencyProperty.Register(
-        nameof(Accent),
-        typeof(Brush),
-        typeof(RingMeter),
-        new PropertyMetadata(Brushes.Gold, OnAccentChanged));
-
     private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
     private static readonly Duration AnimationDuration = new(TimeSpan.FromMilliseconds(520));
 
     public RingMeter()
     {
         InitializeComponent();
-    }
-
-    public Brush Accent
-    {
-        get => (Brush)GetValue(AccentProperty);
-        set => SetValue(AccentProperty, value);
     }
 
     public void SetData(double percent, string title, string resetText, string? tooltip = null)
@@ -38,21 +26,8 @@ public partial class RingMeter : UserControl
         PercentText.Text = FormatPercent(percent);
         ToolTip = tooltip;
 
-        var foreground = ResourceBrush("TextBrush");
-        var accent = Accent ?? Brushes.Gold;
-
-        if (percent >= 90)
-        {
-            accent = ResourceBrush("DangerBrush");
-            foreground = accent;
-        }
-        else if (percent >= 70)
-        {
-            accent = ResourceBrush("WarningBrush");
-            foreground = accent;
-        }
-
-        PercentText.Foreground = foreground;
+        var accent = LimitPalette.BrushFor(percent);
+        PercentText.Foreground = accent;
         Ring.Accent = accent;
 
         var animation = new DoubleAnimation(percent, AnimationDuration)
@@ -72,12 +47,6 @@ public partial class RingMeter : UserControl
         ToolTip = message;
         Ring.BeginAnimation(RingRenderer.ValueProperty, null);
         Ring.Value = 0;
-    }
-
-    private static void OnAccentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is RingMeter meter && meter.Ring is not null && e.NewValue is Brush brush)
-            meter.Ring.Accent = brush;
     }
 
     private static Brush ResourceBrush(string key)
