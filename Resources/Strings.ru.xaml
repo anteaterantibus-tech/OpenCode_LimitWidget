@@ -1,0 +1,207 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Main window -->
+    <sys:String x:Key="MenuRefresh">Обновить</sys:String>
+    <sys:String x:Key="MenuSettings">Настройки</sys:String>
+    <sys:String x:Key="MenuNormal">Обычный вид</sys:String>
+    <sys:String x:Key="MenuCompact">Компактный вид</sys:String>
+    <sys:String x:Key="MenuTaskbar">В панели задач</sys:String>
+    <sys:String x:Key="MenuHide">Скрыть в трей</sys:String>
+    <sys:String x:Key="MenuExit">Выход</sys:String>
+
+    <sys:String x:Key="TipOpenStats">Открыть статистику OpenCode</sys:String>
+    <sys:String x:Key="TipOpenConsole">Открыть OpenCode Console</sys:String>
+    <sys:String x:Key="TipCompact">Компактный режим</sys:String>
+    <sys:String x:Key="TipRefresh">Обновить</sys:String>
+    <sys:String x:Key="TipSettings">Настройки</sys:String>
+    <sys:String x:Key="TipHide">Скрыть в трей</sys:String>
+    <sys:String x:Key="TipNormal">Обычный режим</sys:String>
+    <sys:String x:Key="TipConnection">Подключение к opencode.ai</sys:String>
+    <sys:String x:Key="TipLoad">Нагрузка OpenCode</sys:String>
+
+    <sys:String x:Key="Connecting">Подключение...</sys:String>
+    <sys:String x:Key="Load">Нагрузка</sys:String>
+    <sys:String x:Key="Outage">Сбой</sys:String>
+    <sys:String x:Key="Today">Сегодня</sys:String>
+    <sys:String x:Key="Requests">Запросы</sys:String>
+    <sys:String x:Key="Tokens">Токены</sys:String>
+    <sys:String x:Key="Cost">Стоимость</sys:String>
+    <sys:String x:Key="AutoRefreshFormat">Автообновление: {0}</sys:String>
+    <sys:String x:Key="CachedRefreshing">Данные из кэша · обновление...</sys:String>
+    <sys:String x:Key="Retry">Повторить</sys:String>
+    <sys:String x:Key="ActionSettings">Настройки</sys:String>
+    <sys:String x:Key="ActionConsole">Консоль</sys:String>
+    <sys:String x:Key="TodayCompactFormat">Сегодня: {0} · {1}</sys:String>
+    <sys:String x:Key="TodayDash">Сегодня: -</sys:String>
+
+    <sys:String x:Key="FiveHourShort">5ч</sys:String>
+    <sys:String x:Key="WeekShort">нед</sys:String>
+    <sys:String x:Key="MonthShort">мес</sys:String>
+    <sys:String x:Key="NetLabel">сеть</sys:String>
+    <sys:String x:Key="LoadLabel">нагрузка</sys:String>
+    <sys:String x:Key="TaskbarTooltipFormat">OpenCode Go · 5ч {0} ({1}) · нед {2} ({3}) · мес {4} ({5})</sys:String>
+
+    <sys:String x:Key="FiveHours">5 часов</sys:String>
+    <sys:String x:Key="Week">Неделя</sys:String>
+    <sys:String x:Key="Month">Месяц</sys:String>
+    <sys:String x:Key="FiveHourWindow">5-часовое окно</sys:String>
+    <sys:String x:Key="WeekWindow">Недельное окно</sys:String>
+    <sys:String x:Key="MonthWindow">Месячное окно</sys:String>
+    <sys:String x:Key="NoData">нет данных</sys:String>
+    <sys:String x:Key="NoKey">нет ключа</sys:String>
+    <sys:String x:Key="MeterTooltipFormat">Окно {0}: {1} из {2}. Сброс {3} (через {4}).</sys:String>
+    <sys:String x:Key="UsdOf">из</sys:String>
+    <sys:String x:Key="PlanRenewal">продление {0}</sys:String>
+    <sys:String x:Key="PlanEnds">доступ до {0}</sys:String>
+    <sys:String x:Key="PlanExtra"> · extra</sys:String>
+    <sys:String x:Key="PlanExtraUsage"> · extra usage</sys:String>
+    <sys:String x:Key="GoInactive">Подписка Go не активна</sys:String>
+
+    <sys:String x:Key="ErrNoKeyTitle">Нужен API-ключ</sys:String>
+    <sys:String x:Key="ErrNoKey">Ключ OpenCode Go не найден. Вставьте его в настройках.</sys:String>
+    <sys:String x:Key="ErrUpdateTitle">Ошибка обновления</sys:String>
+    <sys:String x:Key="ErrUpdate">Не удалось обновить данные. Показаны последние значения.</sys:String>
+    <sys:String x:Key="ErrNoSub">Активная подписка Go не найдена. Проверьте её в консоли.</sys:String>
+    <sys:String x:Key="ErrNoSubTitle">Нет подписки Go</sys:String>
+    <sys:String x:Key="ErrNoAccess">Нет доступа</sys:String>
+    <sys:String x:Key="ErrBadKey">Ключ не подходит или у него нет доступа к статистике. Проверьте ключ в настройках.</sys:String>
+    <sys:String x:Key="ErrBadKeyTitle">Ключ не подходит</sys:String>
+    <sys:String x:Key="ErrRateLimit">Слишком много запросов. Подождите минуту и попробуйте снова.</sys:String>
+    <sys:String x:Key="ErrRateLimitTitle">Слишком много запросов</sys:String>
+    <sys:String x:Key="ErrNetwork">Нет связи с opencode.ai. Показаны последние данные.</sys:String>
+    <sys:String x:Key="ErrNetworkTitle">Нет связи</sys:String>
+    <sys:String x:Key="ErrService">Сервис временно недоступен. Показаны последние данные.</sys:String>
+    <sys:String x:Key="ErrServiceTitle">Сервис недоступен</sys:String>
+    <sys:String x:Key="ErrNoData">Нет данных</sys:String>
+
+    <sys:String x:Key="LoadInNorm">Нагрузка: в норме</sys:String>
+    <sys:String x:Key="LoadInNormTooltip">OpenCode Go: нагрузка в норме</sys:String>
+    <sys:String x:Key="LoadOutageTitle">OpenCode Go: сбой</sys:String>
+    <sys:String x:Key="LoadDegradedTitle">OpenCode Go: повышенная нагрузка</sys:String>
+    <sys:String x:Key="LoadReasonFormat">Причина: {0}</sys:String>
+    <sys:String x:Key="LoadModelsFormat">Модели: {0}</sys:String>
+    <sys:String x:Key="LoadForecastFormat">Прогноз: {0}</sys:String>
+    <sys:String x:Key="LoadStale">Данные статуса могли устареть</sys:String>
+    <sys:String x:Key="UpdatedFormat">Обновлено: {0}</sys:String>
+    <sys:String x:Key="LoadOutageShort">Нагрузка: сбой</sys:String>
+    <sys:String x:Key="LoadDegradedShort">Нагрузка: {0}</sys:String>
+    <sys:String x:Key="LoadRaised">повышена</sys:String>
+    <sys:String x:Key="ForecastPeakFormat">Пик {0}, спокойнее {1}</sys:String>
+    <sys:String x:Key="ForecastNoPeak">выраженного пика по часам нет</sys:String>
+    <sys:String x:Key="ReasonUpstream">проблема на стороне провайдера</sys:String>
+    <sys:String x:Key="ReasonLatency">повышенные задержки</sys:String>
+    <sys:String x:Key="ReasonErrors">ошибки запросов</sys:String>
+    <sys:String x:Key="ReasonAvailability">недоступность</sys:String>
+
+    <sys:String x:Key="AlertLimitFormat">Лимит {0} исчерпан · сброс {1}</sys:String>
+    <sys:String x:Key="AlertPercentFormat">Лимит {0}: {1} · сброс {2}</sys:String>
+    <sys:String x:Key="TestNotificationText">5ч: 92% · сброс 1 ч 10 мин</sys:String>
+
+    <sys:String x:Key="CountdownReset">сброс</sys:String>
+    <sys:String x:Key="CountdownDaysHours">{0} д {1} ч</sys:String>
+    <sys:String x:Key="CountdownDays">{0} дн</sys:String>
+    <sys:String x:Key="CountdownHoursMinutes">{0} ч {1} мин</sys:String>
+    <sys:String x:Key="CountdownMinutes">{0} мин</sys:String>
+    <sys:String x:Key="CompactDays">{0}д</sys:String>
+    <sys:String x:Key="CompactDaysHours">{0}д {1}ч</sys:String>
+    <sys:String x:Key="CompactHoursMinutes">{0}ч {1}м</sys:String>
+    <sys:String x:Key="CompactMinutes">{0}м</sys:String>
+    <sys:String x:Key="TokensMillion">{0} млн</sys:String>
+    <sys:String x:Key="TokensThousand">{0} тыс.</sys:String>
+    <sys:String x:Key="SecondsFormat">{0} с</sys:String>
+    <sys:String x:Key="MinutesFormat">{0} мин</sys:String>
+    <sys:String x:Key="HoursFormat">{0} ч</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="SettingsTitle">Настройки OpenCode Go</sys:String>
+    <sys:String x:Key="SettingsHeader">Настройки</sys:String>
+    <sys:String x:Key="Close">Закрыть</sys:String>
+    <sys:String x:Key="ApiKeySection">API-КЛЮЧ OPENCODE GO</sys:String>
+    <sys:String x:Key="Show">Показать</sys:String>
+    <sys:String x:Key="Hide">Скрыть</sys:String>
+    <sys:String x:Key="ApiKeyHelp">Console → Account → Personal API keys. Ключ шифруется средствами Windows и хранится только на этом компьютере. Вход через Google не нужен: виджету достаточно API-ключа.</sys:String>
+    <sys:String x:Key="ImportFromOpenCode">Импортировать из OpenCode</sys:String>
+    <sys:String x:Key="UpdateSection">ОБНОВЛЕНИЕ</sys:String>
+    <sys:String x:Key="Sec30">30 с</sys:String>
+    <sys:String x:Key="Min1">1 мин</sys:String>
+    <sys:String x:Key="Min5">5 мин</sys:String>
+    <sys:String x:Key="Min15">15 мин</sys:String>
+    <sys:String x:Key="AlwaysOnTop">Поверх всех окон</sys:String>
+    <sys:String x:Key="StartWithWindows">Запускать вместе с Windows</sys:String>
+    <sys:String x:Key="HideFullscreen">Скрывать в полноэкранных приложениях</sys:String>
+    <sys:String x:Key="HideFullscreenHelp">Игра или фильм на весь экран: виджет спрячется и вернётся после.</sys:String>
+    <sys:String x:Key="NotificationsSection">УВЕДОМЛЕНИЯ</sys:String>
+    <sys:String x:Key="NotifyLimits">Уведомления о лимитах</sys:String>
+    <sys:String x:Key="NotifySound">Звук уведомлений</sys:String>
+    <sys:String x:Key="PreviewSound">Прослушать</sys:String>
+    <sys:String x:Key="SoundSoft">Мягкий</sys:String>
+    <sys:String x:Key="SoundBell">Звон</sys:String>
+    <sys:String x:Key="SoundWood">Дерево</sys:String>
+    <sys:String x:Key="SoundDrop">Капля</sys:String>
+    <sys:String x:Key="SoundTone">Тон</sys:String>
+    <sys:String x:Key="Glow">Подсветка рамки</sys:String>
+    <sys:String x:Key="Thresholds">Пороги: 70%, 90% и 100%.</sys:String>
+    <sys:String x:Key="TestNotification">Тест уведомления</sys:String>
+    <sys:String x:Key="Check">Проверить</sys:String>
+    <sys:String x:Key="Cancel">Отмена</sys:String>
+    <sys:String x:Key="Save">Сохранить</sys:String>
+    <sys:String x:Key="LanguageSection">ЯЗЫК</sys:String>
+    <sys:String x:Key="LangRu">Русский</sys:String>
+    <sys:String x:Key="LangEn">English</sys:String>
+
+    <sys:String x:Key="ImportSearching">Ищу ключ...</sys:String>
+    <sys:String x:Key="ImportFound">Ключ найден</sys:String>
+    <sys:String x:Key="ImportNotFound">Ключ не найден</sys:String>
+    <sys:String x:Key="ImportFailed">Не удалось импортировать</sys:String>
+    <sys:String x:Key="CheckNoKey">Вставьте API-ключ OpenCode Go.</sys:String>
+    <sys:String x:Key="CheckChecking">Проверяю ключ...</sys:String>
+    <sys:String x:Key="CheckOkFormat">Ключ работает: тариф {0}, продление {1}.</sys:String>
+    <sys:String x:Key="CheckNoSub">Ключ принят, но активной подписки Go нет.</sys:String>
+    <sys:String x:Key="CheckTimeout">Сервер не ответил вовремя.</sys:String>
+    <sys:String x:Key="CheckUnauthorized">Ключ не подошёл или у него нет доступа.</sys:String>
+    <sys:String x:Key="CheckRateLimited">Слишком много запросов. Попробуйте через минуту.</sys:String>
+    <sys:String x:Key="CheckNetwork">Нет связи с opencode.ai.</sys:String>
+    <sys:String x:Key="CheckService">Сервис временно недоступен.</sys:String>
+    <sys:String x:Key="CheckError">Не удалось проверить ключ.</sys:String>
+    <sys:String x:Key="SaveError">Не удалось сохранить настройки.</sys:String>
+
+    <!-- Load window -->
+    <sys:String x:Key="LoadWindowTitle">Нагрузка OpenCode</sys:String>
+    <sys:String x:Key="LoadWindowHeader">Нагрузка OpenCode</sys:String>
+    <sys:String x:Key="LoadOutage">Сбой</sys:String>
+    <sys:String x:Key="LoadDegraded">Повышенная нагрузка</sys:String>
+    <sys:String x:Key="LoadNormal">Нагрузка в норме</sys:String>
+    <sys:String x:Key="LoadOutageDetail">Сервис Go сообщает о сбое.</sys:String>
+    <sys:String x:Key="LoadDegradedDetail">Сервис Go работает с ограничениями.</sys:String>
+    <sys:String x:Key="LoadNormalDetail">Сервис Go работает штатно.</sys:String>
+    <sys:String x:Key="LoadDetailReasonFormat"> Причина: {0}.</sys:String>
+    <sys:String x:Key="LoadDetailModelsFormat"> Модели: {0}.</sys:String>
+    <sys:String x:Key="ChartCaptionFormat">Нагрузка по часам · {0}</sys:String>
+    <sys:String x:Key="ScopeAll">все модели Go</sys:String>
+    <sys:String x:Key="ScopeMyModel">моя модель</sys:String>
+    <sys:String x:Key="ScopeModelPill">Моя модель</sys:String>
+    <sys:String x:Key="ScopeGoPill">Весь Go</sys:String>
+    <sys:String x:Key="ChartPeakFormat">Пик: {0}. Спокойнее: {1}.</sys:String>
+    <sys:String x:Key="ChartNoPeak">Выраженного суточного пика нет: нагрузка появляется в разное время.</sys:String>
+    <sys:String x:Key="ChartNoteModelFormat">Оценка по инцидентам Go, где затронута эта модель за {0} дн. Это не официальный прогноз, а статистика прошлых сбоев.</sys:String>
+    <sys:String x:Key="ChartNoteAllFormat">Оценка по всем инцидентам Go за {0} дн. Это не официальный прогноз, а статистика прошлых сбоев.</sys:String>
+    <sys:String x:Key="ChartTooltipFormat">Час {0}: {1}% времени с нагрузкой</sys:String>
+    <sys:String x:Key="OpenStatusPage">Открыть status.opencode.ai</sys:String>
+
+    <!-- Toast -->
+    <sys:String x:Key="TipCloseNotification">Закрыть уведомление</sys:String>
+
+    <!-- Tray -->
+    <sys:String x:Key="TrayShow">Показать виджет</sys:String>
+    <sys:String x:Key="TrayRefresh">Обновить</sys:String>
+    <sys:String x:Key="TraySettings">Настройки</sys:String>
+    <sys:String x:Key="TrayNormal">Обычный вид</sys:String>
+    <sys:String x:Key="TrayCompact">Компактный вид</sys:String>
+    <sys:String x:Key="TrayTaskbar">В панели задач</sys:String>
+    <sys:String x:Key="TrayStartup">Запускать с Windows</sys:String>
+    <sys:String x:Key="TrayExit">Выход</sys:String>
+    <sys:String x:Key="TrayTooltip">OpenCode Go - лимиты подписки</sys:String>
+
+</ResourceDictionary>

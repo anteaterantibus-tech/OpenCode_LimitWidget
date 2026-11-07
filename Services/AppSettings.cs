@@ -13,6 +13,7 @@ public sealed class AppSettings
     public bool NotifySound { get; set; } = true;
     public string NotifySoundId { get; set; } = "soft";
     public bool AnimateOnLimit { get; set; } = true;
+    public string Language { get; set; } = "ru";
     public double? WindowLeft { get; set; }
     public double? WindowTop { get; set; }
 

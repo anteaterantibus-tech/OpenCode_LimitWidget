@@ -10,11 +10,13 @@ namespace OpenCodeWidget;
 
 public partial class SettingsWindow : Window
 {
-    private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
+    private static CultureInfo Ru => Loc.Culture;
 
     private readonly SettingsStore _store;
     private readonly AppSettings _settings;
     private bool _revealed;
+    private bool _languageReady;
+    private string _originalLanguage = Loc.Russian;
 
     public SettingsWindow(SettingsStore store, AppSettings settings)
     {
@@ -22,6 +24,20 @@ public partial class SettingsWindow : Window
         _settings = settings;
 
         InitializeComponent();
+
+        _originalLanguage = Loc.Language;
+        _languageReady = false;
+        if (Loc.Language == Loc.English)
+            LangEn.IsChecked = true;
+        else
+            LangRu.IsChecked = true;
+        _languageReady = true;
+
+        Closing += (_, _) =>
+        {
+            if (DialogResult != true)
+                Loc.Apply(_originalLanguage);
+        };
 
         var key = store.GetApiKey(settings) ?? "";
         SetKey(key);
@@ -134,7 +150,7 @@ public partial class SettingsWindow : Window
             KeyText.Text = KeyPassword.Password;
             KeyPassword.Visibility = Visibility.Collapsed;
             KeyText.Visibility = Visibility.Visible;
-            RevealButton.Content = "Скрыть";
+            RevealButton.Content = Loc.Get("Hide");
             KeyText.CaretIndex = KeyText.Text.Length;
             KeyText.Focus();
         }
@@ -143,7 +159,7 @@ public partial class SettingsWindow : Window
             KeyPassword.Password = KeyText.Text;
             KeyText.Visibility = Visibility.Collapsed;
             KeyPassword.Visibility = Visibility.Visible;
-            RevealButton.Content = "Показать";
+            RevealButton.Content = Loc.Get("Show");
             KeyPassword.Focus();
         }
     }
@@ -152,7 +168,7 @@ public partial class SettingsWindow : Window
     {
         ImportButton.IsEnabled = false;
         ImportStatus.Foreground = (Brush)FindResource("MutedBrush");
-        ImportStatus.Text = "Ищу ключ...";
+        ImportStatus.Text = Loc.Get("ImportSearching");
 
         try
         {
@@ -161,19 +177,19 @@ public partial class SettingsWindow : Window
             {
                 SetKey(key);
                 ImportStatus.Foreground = (Brush)FindResource("SuccessBrush");
-                ImportStatus.Text = "Ключ найден";
+                ImportStatus.Text = Loc.Get("ImportFound");
             }
             else
             {
                 ImportStatus.Foreground = (Brush)FindResource("DangerBrush");
-                ImportStatus.Text = "Ключ не найден";
+                ImportStatus.Text = Loc.Get("ImportNotFound");
             }
         }
         catch (Exception ex)
         {
             App.Log(ex);
             ImportStatus.Foreground = (Brush)FindResource("DangerBrush");
-            ImportStatus.Text = "Не удалось импортировать";
+            ImportStatus.Text = Loc.Get("ImportFailed");
         }
         finally
         {
@@ -186,12 +202,12 @@ public partial class SettingsWindow : Window
         var key = ReadKey();
         if (key.Length < 16)
         {
-            ShowStatus("Вставьте API-ключ OpenCode Go.", StatusKind.Error);
+            ShowStatus(Loc.Get("CheckNoKey"), StatusKind.Error);
             return;
         }
 
         SetBusy(true);
-        ShowStatus("Проверяю ключ...", StatusKind.Neutral);
+        ShowStatus(Loc.Get("CheckChecking"), StatusKind.Neutral);
 
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(20));
 
@@ -210,31 +226,31 @@ public partial class SettingsWindow : Window
                     _ => "Go",
                 };
                 var end = status.Access.EndsAt.ToLocalTime().ToString("d MMM yyyy", Ru);
-                ShowStatus($"Ключ работает: тариф {plan}, продление {end}.", StatusKind.Success);
+                ShowStatus(Loc.Format("CheckOkFormat", plan, end), StatusKind.Success);
             }
             else
             {
-                ShowStatus("Ключ принят, но активной подписки Go нет.", StatusKind.Error);
+                ShowStatus(Loc.Get("CheckNoSub"), StatusKind.Error);
             }
         }
         catch (OperationCanceledException)
         {
-            ShowStatus("Сервер не ответил вовремя.", StatusKind.Error);
+            ShowStatus(Loc.Get("CheckTimeout"), StatusKind.Error);
         }
         catch (GoApiException ex)
         {
             ShowStatus(ex.Kind switch
             {
-                GoApiErrorKind.Unauthorized => "Ключ не подошёл или у него нет доступа.",
-                GoApiErrorKind.RateLimited => "Слишком много запросов. Попробуйте через минуту.",
-                GoApiErrorKind.Network => "Нет связи с opencode.ai.",
-                _ => "Сервис временно недоступен.",
+                GoApiErrorKind.Unauthorized => Loc.Get("CheckUnauthorized"),
+                GoApiErrorKind.RateLimited => Loc.Get("CheckRateLimited"),
+                GoApiErrorKind.Network => Loc.Get("CheckNetwork"),
+                _ => Loc.Get("CheckService"),
             }, StatusKind.Error);
         }
         catch (Exception ex)
         {
             App.Log(ex);
-            ShowStatus("Не удалось проверить ключ.", StatusKind.Error);
+            ShowStatus(Loc.Get("CheckError"), StatusKind.Error);
         }
         finally
         {
@@ -247,7 +263,7 @@ public partial class SettingsWindow : Window
         var key = ReadKey();
         if (key.Length < 16)
         {
-            ShowStatus("Вставьте API-ключ OpenCode Go.", StatusKind.Error);
+            ShowStatus(Loc.Get("CheckNoKey"), StatusKind.Error);
             return;
         }
 
@@ -262,6 +278,7 @@ public partial class SettingsWindow : Window
             _settings.NotifySound = SoundToggle.IsChecked == true;
             _settings.NotifySoundId = SelectedSoundId();
             _settings.AnimateOnLimit = AnimateToggle.IsChecked == true;
+            _settings.Language = Loc.Language;
 
             _store.Save(_settings);
             StartupManager.SetEnabled(_settings.StartWithWindows);
@@ -271,13 +288,24 @@ public partial class SettingsWindow : Window
         catch (Exception ex)
         {
             App.Log(ex);
-            ShowStatus("Не удалось сохранить настройки.", StatusKind.Error);
+            ShowStatus(Loc.Get("SaveError"), StatusKind.Error);
         }
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
         DialogResult = false;
+    }
+
+    private void Language_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_languageReady)
+            return;
+
+        Loc.Apply((sender as RadioButton)?.Tag as string);
+        RevealButton.Content = Loc.Get(_revealed ? "Hide" : "Show");
+        StatusHost.Visibility = Visibility.Collapsed;
+        ImportStatus.Text = "";
     }
 
     private void SetBusy(bool busy)

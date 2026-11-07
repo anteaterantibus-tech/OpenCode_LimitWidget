@@ -15,6 +15,10 @@ public partial class LoadWindow : Window
     private readonly LoadForecast _overall;
     private readonly LoadForecast? _model;
     private readonly string? _modelName;
+    private readonly ServiceStatusResponse _status;
+
+    private LoadForecast _currentForecast;
+    private bool _currentIsModel;
 
     public LoadWindow(
         ServiceStatusResponse status,
@@ -22,18 +26,23 @@ public partial class LoadWindow : Window
         LoadForecast? model,
         string? modelName)
     {
+        _status = status;
         _overall = overall;
         _model = model;
         _modelName = modelName;
+        _currentForecast = overall;
 
         InitializeComponent();
 
-        ApplyState(status);
+        Loc.Changed += OnLanguageChanged;
+        Closed += (_, _) => Loc.Changed -= OnLanguageChanged;
+
+        ApplyState(_status);
 
         if (_model is null || string.IsNullOrWhiteSpace(_modelName))
         {
             ScopePanel.Visibility = Visibility.Collapsed;
-            ShowForecast(_overall, "все модели Go", isModel: false);
+            ShowForecast(_overall, isModel: false);
         }
         else
         {
@@ -41,12 +50,18 @@ public partial class LoadWindow : Window
         }
     }
 
+    private void OnLanguageChanged()
+    {
+        ApplyState(_status);
+        ShowForecast(_currentForecast, _currentIsModel);
+    }
+
     private void Scope_Changed(object sender, RoutedEventArgs e)
     {
         if (ScopeModel.IsChecked == true && _model is not null)
-            ShowForecast(_model, _modelName ?? "моя модель", isModel: true);
+            ShowForecast(_model, isModel: true);
         else
-            ShowForecast(_overall, "все модели Go", isModel: false);
+            ShowForecast(_overall, isModel: false);
     }
 
     private void ApplyState(ServiceStatusResponse status)
@@ -67,23 +82,23 @@ public partial class LoadWindow : Window
         StateIcon.Foreground = brush;
         StateText.Foreground = brush;
 
-        StateText.Text = level switch
+        StateText.Text = Loc.Get(level switch
         {
-            "outage" => "Сбой",
-            "degraded" => "Повышенная нагрузка",
-            _ => "Нагрузка в норме",
-        };
+            "outage" => "LoadOutage",
+            "degraded" => "LoadDegraded",
+            _ => "LoadNormal",
+        });
 
-        var detail = level switch
+        var detail = Loc.Get(level switch
         {
-            "outage" => "Сервис Go сообщает о сбое.",
-            "degraded" => "Сервис Go работает с ограничениями.",
-            _ => "Сервис Go работает штатно.",
-        };
+            "outage" => "LoadOutageDetail",
+            "degraded" => "LoadDegradedDetail",
+            _ => "LoadNormalDetail",
+        });
 
         var reason = ReasonText(go?.Reason);
         if (reason.Length > 0)
-            detail += " Причина: " + reason + ".";
+            detail += Loc.Format("LoadDetailReasonFormat", reason);
 
         if (go?.Models is { Count: > 0 } models)
         {
@@ -92,29 +107,32 @@ public partial class LoadWindow : Window
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .Distinct(StringComparer.OrdinalIgnoreCase);
 
-            detail += " Модели: " + string.Join(", ", names) + ".";
+            detail += Loc.Format("LoadDetailModelsFormat", string.Join(", ", names));
         }
 
         StateDetail.Text = detail;
     }
 
-    private void ShowForecast(LoadForecast forecast, string scope, bool isModel)
+    private void ShowForecast(LoadForecast forecast, bool isModel)
     {
-        ChartCaption.Text = "Нагрузка по часам · " + scope;
+        _currentForecast = forecast;
+        _currentIsModel = isModel;
+
+        var scope = isModel
+            ? _modelName ?? Loc.Get("ScopeMyModel")
+            : Loc.Get("ScopeAll");
+
+        ChartCaption.Text = Loc.Format("ChartCaptionFormat", scope);
 
         BuildChart(forecast);
 
         SummaryText.Text = forecast.HasPattern
-            ? $"Пик: {forecast.PeakRange}. Спокойнее: {forecast.QuietRange}."
-            : "Выраженного суточного пика нет: нагрузка появляется в разное время.";
+            ? Loc.Format("ChartPeakFormat", forecast.PeakRange, forecast.QuietRange)
+            : Loc.Get("ChartNoPeak");
 
-        var scopeNote = isModel
-            ? "Оценка по инцидентам Go, где затронута эта модель"
-            : "Оценка по всем инцидентам Go";
-
-        NoteText.Text =
-            $"{scopeNote} за {forecast.Days} дн. " +
-            "Это не официальный прогноз, а статистика прошлых сбоев.";
+        NoteText.Text = Loc.Format(
+            isModel ? "ChartNoteModelFormat" : "ChartNoteAllFormat",
+            forecast.Days);
     }
 
     private void BuildChart(LoadForecast forecast)
@@ -142,7 +160,10 @@ public partial class LoadWindow : Window
                 Margin = new Thickness(1.5, 0, 1.5, 0),
                 Background = isCurrent ? text : warning,
                 Opacity = isCurrent ? 0.95 : 0.5,
-                ToolTip = $"{hour:00}:00 · {share * 100:0}% времени с нагрузкой",
+                ToolTip = Loc.Format(
+                    "ChartTooltipFormat",
+                    hour.ToString("00"),
+                    (share * 100).ToString("0")),
             };
 
             var host = new Grid();
@@ -156,10 +177,10 @@ public partial class LoadWindow : Window
     {
         return reason?.Trim().ToLowerInvariant() switch
         {
-            "upstream" => "проблема на стороне провайдера",
-            "latency" => "повышенные задержки",
-            "errors" => "ошибки запросов",
-            "availability" => "недоступность",
+            "upstream" => Loc.Get("ReasonUpstream"),
+            "latency" => Loc.Get("ReasonLatency"),
+            "errors" => Loc.Get("ReasonErrors"),
+            "availability" => Loc.Get("ReasonAvailability"),
             _ => "",
         };
     }

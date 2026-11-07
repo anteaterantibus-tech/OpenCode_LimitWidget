@@ -36,6 +36,7 @@ public partial class App : Application
 
         _store = new SettingsStore();
         _settings = _store.Load();
+        Loc.Apply(_settings.Language, notify: false);
 
         if (string.IsNullOrWhiteSpace(_store.GetApiKey(_settings)))
         {

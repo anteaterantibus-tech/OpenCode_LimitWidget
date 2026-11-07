@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using OpenCodeWidget.Services;
 using Brush = System.Windows.Media.Brush;
 
 namespace OpenCodeWidget.Controls;
@@ -14,7 +15,7 @@ public partial class MiniMeter : UserControl
         typeof(MiniMeter),
         new PropertyMetadata(0d, OnValueChanged));
 
-    private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
+    private static CultureInfo Ru => Loc.Culture;
 
     public MiniMeter()
     {

@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using OpenCodeWidget.Services;
 using Brush = System.Windows.Media.Brush;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -9,7 +10,7 @@ namespace OpenCodeWidget.Controls;
 
 public partial class RingMeter : UserControl
 {
-    private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
+    private static CultureInfo Ru => Loc.Culture;
     private static readonly Duration AnimationDuration = new(TimeSpan.FromMilliseconds(520));
 
     public RingMeter()

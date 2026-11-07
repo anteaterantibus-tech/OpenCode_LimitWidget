@@ -4,6 +4,9 @@
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Strings.ru.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
             <!-- Palette -->
             <SolidColorBrush x:Key="CardBrush" Color="#FA141417" />

@@ -72,8 +72,8 @@
                         Width="20"
                         Height="20"
                         Click="Close_Click"
-                        ToolTip="Закрыть"
-                        AutomationProperties.Name="Закрыть уведомление"
+                        ToolTip="{DynamicResource Close}"
+                        AutomationProperties.Name="{DynamicResource TipCloseNotification}"
                         VerticalAlignment="Center">
                     <TextBlock Text="&#xE711;"
                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"

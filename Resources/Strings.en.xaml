@@ -1,0 +1,207 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Main window -->
+    <sys:String x:Key="MenuRefresh">Refresh</sys:String>
+    <sys:String x:Key="MenuSettings">Settings</sys:String>
+    <sys:String x:Key="MenuNormal">Normal view</sys:String>
+    <sys:String x:Key="MenuCompact">Compact view</sys:String>
+    <sys:String x:Key="MenuTaskbar">In taskbar</sys:String>
+    <sys:String x:Key="MenuHide">Hide to tray</sys:String>
+    <sys:String x:Key="MenuExit">Exit</sys:String>
+
+    <sys:String x:Key="TipOpenStats">Open OpenCode stats</sys:String>
+    <sys:String x:Key="TipOpenConsole">Open OpenCode Console</sys:String>
+    <sys:String x:Key="TipCompact">Compact mode</sys:String>
+    <sys:String x:Key="TipRefresh">Refresh</sys:String>
+    <sys:String x:Key="TipSettings">Settings</sys:String>
+    <sys:String x:Key="TipHide">Hide to tray</sys:String>
+    <sys:String x:Key="TipNormal">Normal mode</sys:String>
+    <sys:String x:Key="TipConnection">Connection to opencode.ai</sys:String>
+    <sys:String x:Key="TipLoad">OpenCode load</sys:String>
+
+    <sys:String x:Key="Connecting">Connecting...</sys:String>
+    <sys:String x:Key="Load">Load</sys:String>
+    <sys:String x:Key="Outage">Outage</sys:String>
+    <sys:String x:Key="Today">Today</sys:String>
+    <sys:String x:Key="Requests">Requests</sys:String>
+    <sys:String x:Key="Tokens">Tokens</sys:String>
+    <sys:String x:Key="Cost">Cost</sys:String>
+    <sys:String x:Key="AutoRefreshFormat">Auto-refresh: {0}</sys:String>
+    <sys:String x:Key="CachedRefreshing">Cached data · refreshing...</sys:String>
+    <sys:String x:Key="Retry">Retry</sys:String>
+    <sys:String x:Key="ActionSettings">Settings</sys:String>
+    <sys:String x:Key="ActionConsole">Console</sys:String>
+    <sys:String x:Key="TodayCompactFormat">Today: {0} · {1}</sys:String>
+    <sys:String x:Key="TodayDash">Today: -</sys:String>
+
+    <sys:String x:Key="FiveHourShort">5h</sys:String>
+    <sys:String x:Key="WeekShort">wk</sys:String>
+    <sys:String x:Key="MonthShort">mo</sys:String>
+    <sys:String x:Key="NetLabel">net</sys:String>
+    <sys:String x:Key="LoadLabel">load</sys:String>
+    <sys:String x:Key="TaskbarTooltipFormat">OpenCode Go · 5h {0} ({1}) · wk {2} ({3}) · mo {4} ({5})</sys:String>
+
+    <sys:String x:Key="FiveHours">5 hours</sys:String>
+    <sys:String x:Key="Week">Week</sys:String>
+    <sys:String x:Key="Month">Month</sys:String>
+    <sys:String x:Key="FiveHourWindow">5-hour window</sys:String>
+    <sys:String x:Key="WeekWindow">Weekly window</sys:String>
+    <sys:String x:Key="MonthWindow">Monthly window</sys:String>
+    <sys:String x:Key="NoData">no data</sys:String>
+    <sys:String x:Key="NoKey">no key</sys:String>
+    <sys:String x:Key="MeterTooltipFormat">Window {0}: {1} of {2}. Resets {3} (in {4}).</sys:String>
+    <sys:String x:Key="UsdOf">of</sys:String>
+    <sys:String x:Key="PlanRenewal">renews {0}</sys:String>
+    <sys:String x:Key="PlanEnds">access until {0}</sys:String>
+    <sys:String x:Key="PlanExtra"> · extra</sys:String>
+    <sys:String x:Key="PlanExtraUsage"> · extra usage</sys:String>
+    <sys:String x:Key="GoInactive">Go subscription is inactive</sys:String>
+
+    <sys:String x:Key="ErrNoKeyTitle">API key required</sys:String>
+    <sys:String x:Key="ErrNoKey">OpenCode Go key not found. Add it in settings.</sys:String>
+    <sys:String x:Key="ErrUpdateTitle">Update error</sys:String>
+    <sys:String x:Key="ErrUpdate">Could not refresh data. Showing the last values.</sys:String>
+    <sys:String x:Key="ErrNoSub">No active Go subscription found. Check it in the console.</sys:String>
+    <sys:String x:Key="ErrNoSubTitle">No Go subscription</sys:String>
+    <sys:String x:Key="ErrNoAccess">No access</sys:String>
+    <sys:String x:Key="ErrBadKey">The key is invalid or has no access to usage data. Check it in settings.</sys:String>
+    <sys:String x:Key="ErrBadKeyTitle">Invalid key</sys:String>
+    <sys:String x:Key="ErrRateLimit">Too many requests. Wait a minute and try again.</sys:String>
+    <sys:String x:Key="ErrRateLimitTitle">Too many requests</sys:String>
+    <sys:String x:Key="ErrNetwork">No connection to opencode.ai. Showing the last data.</sys:String>
+    <sys:String x:Key="ErrNetworkTitle">No connection</sys:String>
+    <sys:String x:Key="ErrService">The service is temporarily unavailable. Showing the last data.</sys:String>
+    <sys:String x:Key="ErrServiceTitle">Service unavailable</sys:String>
+    <sys:String x:Key="ErrNoData">No data</sys:String>
+
+    <sys:String x:Key="LoadInNorm">Load: normal</sys:String>
+    <sys:String x:Key="LoadInNormTooltip">OpenCode Go: load normal</sys:String>
+    <sys:String x:Key="LoadOutageTitle">OpenCode Go: outage</sys:String>
+    <sys:String x:Key="LoadDegradedTitle">OpenCode Go: high load</sys:String>
+    <sys:String x:Key="LoadReasonFormat">Reason: {0}</sys:String>
+    <sys:String x:Key="LoadModelsFormat">Models: {0}</sys:String>
+    <sys:String x:Key="LoadForecastFormat">Forecast: {0}</sys:String>
+    <sys:String x:Key="LoadStale">Status data may be stale</sys:String>
+    <sys:String x:Key="UpdatedFormat">Updated: {0}</sys:String>
+    <sys:String x:Key="LoadOutageShort">Load: outage</sys:String>
+    <sys:String x:Key="LoadDegradedShort">Load: {0}</sys:String>
+    <sys:String x:Key="LoadRaised">elevated</sys:String>
+    <sys:String x:Key="ForecastPeakFormat">Peak {0}, quieter {1}</sys:String>
+    <sys:String x:Key="ForecastNoPeak">no clear hourly peak</sys:String>
+    <sys:String x:Key="ReasonUpstream">provider-side issue</sys:String>
+    <sys:String x:Key="ReasonLatency">increased latency</sys:String>
+    <sys:String x:Key="ReasonErrors">request errors</sys:String>
+    <sys:String x:Key="ReasonAvailability">unavailability</sys:String>
+
+    <sys:String x:Key="AlertLimitFormat">Limit {0} reached · resets {1}</sys:String>
+    <sys:String x:Key="AlertPercentFormat">Limit {0}: {1} · resets {2}</sys:String>
+    <sys:String x:Key="TestNotificationText">5h: 92% · resets 1h 10m</sys:String>
+
+    <sys:String x:Key="CountdownReset">reset</sys:String>
+    <sys:String x:Key="CountdownDaysHours">{0}d {1}h</sys:String>
+    <sys:String x:Key="CountdownDays">{0}d</sys:String>
+    <sys:String x:Key="CountdownHoursMinutes">{0}h {1}m</sys:String>
+    <sys:String x:Key="CountdownMinutes">{0}m</sys:String>
+    <sys:String x:Key="CompactDays">{0}d</sys:String>
+    <sys:String x:Key="CompactDaysHours">{0}d {1}h</sys:String>
+    <sys:String x:Key="CompactHoursMinutes">{0}h {1}m</sys:String>
+    <sys:String x:Key="CompactMinutes">{0}m</sys:String>
+    <sys:String x:Key="TokensMillion">{0}M</sys:String>
+    <sys:String x:Key="TokensThousand">{0}K</sys:String>
+    <sys:String x:Key="SecondsFormat">{0}s</sys:String>
+    <sys:String x:Key="MinutesFormat">{0} min</sys:String>
+    <sys:String x:Key="HoursFormat">{0} h</sys:String>
+
+    <!-- Settings -->
+    <sys:String x:Key="SettingsTitle">OpenCode Go settings</sys:String>
+    <sys:String x:Key="SettingsHeader">Settings</sys:String>
+    <sys:String x:Key="Close">Close</sys:String>
+    <sys:String x:Key="ApiKeySection">OPENCODE GO API KEY</sys:String>
+    <sys:String x:Key="Show">Show</sys:String>
+    <sys:String x:Key="Hide">Hide</sys:String>
+    <sys:String x:Key="ApiKeyHelp">Console → Account → Personal API keys. The key is encrypted by Windows and stored only on this computer. No Google sign-in is needed: the widget only uses the API key.</sys:String>
+    <sys:String x:Key="ImportFromOpenCode">Import from OpenCode</sys:String>
+    <sys:String x:Key="UpdateSection">REFRESH</sys:String>
+    <sys:String x:Key="Sec30">30 s</sys:String>
+    <sys:String x:Key="Min1">1 min</sys:String>
+    <sys:String x:Key="Min5">5 min</sys:String>
+    <sys:String x:Key="Min15">15 min</sys:String>
+    <sys:String x:Key="AlwaysOnTop">Always on top</sys:String>
+    <sys:String x:Key="StartWithWindows">Start with Windows</sys:String>
+    <sys:String x:Key="HideFullscreen">Hide in fullscreen apps</sys:String>
+    <sys:String x:Key="HideFullscreenHelp">When a game or movie is fullscreen, the widget hides and comes back afterwards.</sys:String>
+    <sys:String x:Key="NotificationsSection">NOTIFICATIONS</sys:String>
+    <sys:String x:Key="NotifyLimits">Limit notifications</sys:String>
+    <sys:String x:Key="NotifySound">Notification sound</sys:String>
+    <sys:String x:Key="PreviewSound">Preview</sys:String>
+    <sys:String x:Key="SoundSoft">Soft</sys:String>
+    <sys:String x:Key="SoundBell">Bell</sys:String>
+    <sys:String x:Key="SoundWood">Wood</sys:String>
+    <sys:String x:Key="SoundDrop">Drop</sys:String>
+    <sys:String x:Key="SoundTone">Tone</sys:String>
+    <sys:String x:Key="Glow">Frame glow</sys:String>
+    <sys:String x:Key="Thresholds">Thresholds: 70%, 90% and 100%.</sys:String>
+    <sys:String x:Key="TestNotification">Test notification</sys:String>
+    <sys:String x:Key="Check">Check</sys:String>
+    <sys:String x:Key="Cancel">Cancel</sys:String>
+    <sys:String x:Key="Save">Save</sys:String>
+    <sys:String x:Key="LanguageSection">LANGUAGE</sys:String>
+    <sys:String x:Key="LangRu">Русский</sys:String>
+    <sys:String x:Key="LangEn">English</sys:String>
+
+    <sys:String x:Key="ImportSearching">Looking for a key...</sys:String>
+    <sys:String x:Key="ImportFound">Key found</sys:String>
+    <sys:String x:Key="ImportNotFound">Key not found</sys:String>
+    <sys:String x:Key="ImportFailed">Import failed</sys:String>
+    <sys:String x:Key="CheckNoKey">Enter your OpenCode Go API key.</sys:String>
+    <sys:String x:Key="CheckChecking">Checking the key...</sys:String>
+    <sys:String x:Key="CheckOkFormat">Key works: plan {0}, renewal {1}.</sys:String>
+    <sys:String x:Key="CheckNoSub">Key accepted, but there is no active Go subscription.</sys:String>
+    <sys:String x:Key="CheckTimeout">The server did not respond in time.</sys:String>
+    <sys:String x:Key="CheckUnauthorized">The key is invalid or has no access.</sys:String>
+    <sys:String x:Key="CheckRateLimited">Too many requests. Try again in a minute.</sys:String>
+    <sys:String x:Key="CheckNetwork">No connection to opencode.ai.</sys:String>
+    <sys:String x:Key="CheckService">The service is temporarily unavailable.</sys:String>
+    <sys:String x:Key="CheckError">Could not verify the key.</sys:String>
+    <sys:String x:Key="SaveError">Could not save settings.</sys:String>
+
+    <!-- Load window -->
+    <sys:String x:Key="LoadWindowTitle">OpenCode load</sys:String>
+    <sys:String x:Key="LoadWindowHeader">OpenCode load</sys:String>
+    <sys:String x:Key="LoadOutage">Outage</sys:String>
+    <sys:String x:Key="LoadDegraded">High load</sys:String>
+    <sys:String x:Key="LoadNormal">Load normal</sys:String>
+    <sys:String x:Key="LoadOutageDetail">The Go service reports an outage.</sys:String>
+    <sys:String x:Key="LoadDegradedDetail">The Go service is operating with restrictions.</sys:String>
+    <sys:String x:Key="LoadNormalDetail">The Go service is operating normally.</sys:String>
+    <sys:String x:Key="LoadDetailReasonFormat"> Reason: {0}.</sys:String>
+    <sys:String x:Key="LoadDetailModelsFormat"> Models: {0}.</sys:String>
+    <sys:String x:Key="ChartCaptionFormat">Hourly load · {0}</sys:String>
+    <sys:String x:Key="ScopeAll">all Go models</sys:String>
+    <sys:String x:Key="ScopeMyModel">my model</sys:String>
+    <sys:String x:Key="ScopeModelPill">My model</sys:String>
+    <sys:String x:Key="ScopeGoPill">All Go</sys:String>
+    <sys:String x:Key="ChartPeakFormat">Peak: {0}. Quieter: {1}.</sys:String>
+    <sys:String x:Key="ChartNoPeak">No clear daily peak: load appears at different times.</sys:String>
+    <sys:String x:Key="ChartNoteModelFormat">Estimate from Go incidents affecting this model over {0} days. This is not an official forecast, just past incident statistics.</sys:String>
+    <sys:String x:Key="ChartNoteAllFormat">Estimate from all Go incidents over {0} days. This is not an official forecast, just past incident statistics.</sys:String>
+    <sys:String x:Key="ChartTooltipFormat">Hour {0}: {1}% of the time with load</sys:String>
+    <sys:String x:Key="OpenStatusPage">Open status.opencode.ai</sys:String>
+
+    <!-- Toast -->
+    <sys:String x:Key="TipCloseNotification">Close notification</sys:String>
+
+    <!-- Tray -->
+    <sys:String x:Key="TrayShow">Show widget</sys:String>
+    <sys:String x:Key="TrayRefresh">Refresh</sys:String>
+    <sys:String x:Key="TraySettings">Settings</sys:String>
+    <sys:String x:Key="TrayNormal">Normal view</sys:String>
+    <sys:String x:Key="TrayCompact">Compact view</sys:String>
+    <sys:String x:Key="TrayTaskbar">In taskbar</sys:String>
+    <sys:String x:Key="TrayStartup">Start with Windows</sys:String>
+    <sys:String x:Key="TrayExit">Exit</sys:String>
+    <sys:String x:Key="TrayTooltip">OpenCode Go - subscription limits</sys:String>
+
+</ResourceDictionary>

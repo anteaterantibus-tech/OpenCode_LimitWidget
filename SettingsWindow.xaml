@@ -1,7 +1,7 @@
 <Window x:Class="OpenCodeWidget.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Настройки OpenCode Go"
+        Title="{DynamicResource SettingsTitle}"
         Width="436"
         SizeToContent="Height"
         WindowStyle="None"
@@ -51,7 +51,7 @@
                            Height="26"
                            Stretch="Uniform"
                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="Настройки"
+                    <TextBlock Text="{DynamicResource SettingsHeader}"
                                Margin="8,0,0,0"
                                FontSize="13"
                                FontWeight="SemiBold"
@@ -60,7 +60,7 @@
                 <Button HorizontalAlignment="Right"
                         Style="{StaticResource IconButton}"
                         Click="Cancel_Click"
-                        ToolTip="Закрыть">
+                        ToolTip="{DynamicResource Close}">
                     <TextBlock Text="&#xE711;"
                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                FontSize="10" />
@@ -70,13 +70,13 @@
             <!-- API key -->
             <StackPanel Grid.Row="1" Margin="0,18,0,0">
                 <Grid>
-                    <TextBlock Text="API-КЛЮЧ OPENCODE GO"
+                    <TextBlock Text="{DynamicResource ApiKeySection}"
                                Style="{StaticResource SectionLabel}"
                                VerticalAlignment="Center" />
                     <Button x:Name="RevealButton"
                             HorizontalAlignment="Right"
                             Style="{StaticResource LinkButton}"
-                            Content="Показать"
+                            Content="{DynamicResource Show}"
                             Click="Reveal_Click" />
                 </Grid>
 
@@ -94,18 +94,15 @@
                            FontSize="10"
                            Foreground="{StaticResource FaintBrush}"
                            TextWrapping="Wrap"
-                           LineHeight="15">
-                    Console → Account → Personal API keys. Ключ шифруется средствами Windows
-                    и хранится только на этом компьютере. Вход через Google не нужен:
-                    виджету достаточно API-ключа.
-                </TextBlock>
+                           LineHeight="15"
+                           Text="{DynamicResource ApiKeyHelp}" />
 
                 <Grid Margin="0,9,0,0">
                     <Button x:Name="ImportButton"
                             Style="{StaticResource SecondaryButton}"
                             FontSize="10.5"
                             Padding="10,5"
-                            Content="Импортировать из OpenCode"
+                            Content="{DynamicResource ImportFromOpenCode}"
                             Click="Import_Click"
                             HorizontalAlignment="Left" />
                     <TextBlock x:Name="ImportStatus"
@@ -123,7 +120,7 @@
 
             <!-- Refresh interval -->
             <StackPanel Grid.Row="3" Margin="0,14,0,0">
-                <TextBlock Text="ОБНОВЛЕНИЕ"
+                <TextBlock Text="{DynamicResource UpdateSection}"
                            Style="{StaticResource SectionLabel}" />
                 <Grid Margin="0,7,0,0">
                     <Grid.ColumnDefinitions>
@@ -136,28 +133,28 @@
                                  Grid.Column="0"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
-                                 Content="30 с"
+                                 Content="{DynamicResource Sec30}"
                                  Tag="30"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh60"
                                  Grid.Column="1"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
-                                 Content="1 мин"
+                                 Content="{DynamicResource Min1}"
                                  Tag="60"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh300"
                                  Grid.Column="2"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
-                                 Content="5 мин"
+                                 Content="{DynamicResource Min5}"
                                  Tag="300"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="Refresh900"
                                  Grid.Column="3"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Refresh"
-                                 Content="15 мин"
+                                 Content="{DynamicResource Min15}"
                                  Tag="900" />
                 </Grid>
             </StackPanel>
@@ -166,16 +163,16 @@
             <StackPanel Grid.Row="4" Margin="0,16,0,0">
                 <CheckBox x:Name="AlwaysOnTopToggle"
                           Style="{StaticResource Toggle}"
-                          Content="Поверх всех окон" />
+                          Content="{DynamicResource AlwaysOnTop}" />
                 <CheckBox x:Name="StartupToggle"
                           Style="{StaticResource Toggle}"
-                          Content="Запускать вместе с Windows"
+                          Content="{DynamicResource StartWithWindows}"
                           Margin="0,11,0,0" />
                 <CheckBox x:Name="FullscreenToggle"
                           Style="{StaticResource Toggle}"
-                          Content="Скрывать в полноэкранных приложениях"
+                          Content="{DynamicResource HideFullscreen}"
                           Margin="0,11,0,0" />
-                <TextBlock Text="Игра или фильм на весь экран: виджет спрячется и вернётся после."
+                <TextBlock Text="{DynamicResource HideFullscreenHelp}"
                            FontSize="9"
                            Foreground="{StaticResource FaintBrush}"
                            Margin="46,5,0,0"
@@ -184,22 +181,22 @@
                 <Border Height="1"
                         Background="{StaticResource DividerBrush}"
                         Margin="0,14,0,0" />
-                <TextBlock Text="УВЕДОМЛЕНИЯ"
+                <TextBlock Text="{DynamicResource NotificationsSection}"
                            Style="{StaticResource SectionLabel}"
                            Margin="0,12,0,0" />
                 <CheckBox x:Name="NotifyToggle"
                           Style="{StaticResource Toggle}"
-                          Content="Уведомления о лимитах"
+                          Content="{DynamicResource NotifyLimits}"
                           Margin="0,9,0,0" />
                 <Grid Margin="0,9,0,0">
                     <CheckBox x:Name="SoundToggle"
                               Style="{StaticResource Toggle}"
-                              Content="Звук уведомлений" />
+                              Content="{DynamicResource NotifySound}" />
                     <Button x:Name="PreviewSoundButton"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Style="{StaticResource LinkButton}"
-                            Content="Прослушать"
+                            Content="{DynamicResource PreviewSound}"
                             Click="PreviewSound_Click" />
                 </Grid>
                 <Grid Margin="0,6,0,0">
@@ -214,51 +211,79 @@
                                  Grid.Column="0"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
-                                 Content="Мягкий"
+                                 Content="{DynamicResource SoundSoft}"
                                  Tag="soft"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundBell"
                                  Grid.Column="1"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
-                                 Content="Звон"
+                                 Content="{DynamicResource SoundBell}"
                                  Tag="bell"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundWood"
                                  Grid.Column="2"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
-                                 Content="Дерево"
+                                 Content="{DynamicResource SoundWood}"
                                  Tag="wood"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundDrop"
                                  Grid.Column="3"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
-                                 Content="Капля"
+                                 Content="{DynamicResource SoundDrop}"
                                  Tag="drop"
                                  Margin="0,0,5,0" />
                     <RadioButton x:Name="SoundMinimal"
                                  Grid.Column="4"
                                  Style="{StaticResource PillRadio}"
                                  GroupName="Sound"
-                                 Content="Тон"
+                                 Content="{DynamicResource SoundTone}"
                                  Tag="minimal" />
                 </Grid>
                 <CheckBox x:Name="AnimateToggle"
                           Style="{StaticResource Toggle}"
-                          Content="Подсветка рамки"
+                          Content="{DynamicResource Glow}"
                           Margin="0,9,0,0" />
                 <Grid Margin="46,5,0,0">
-                    <TextBlock Text="Пороги: 70%, 90% и 100%."
+                    <TextBlock Text="{DynamicResource Thresholds}"
                                FontSize="9"
                                Foreground="{StaticResource FaintBrush}"
                                VerticalAlignment="Center" />
                     <Button HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Style="{StaticResource LinkButton}"
-                            Content="Тест уведомления"
+                            Content="{DynamicResource TestNotification}"
                             Click="TestNotification_Click" />
+                </Grid>
+
+                <Border Height="1"
+                        Background="{StaticResource DividerBrush}"
+                        Margin="0,14,0,0" />
+                <TextBlock Text="{DynamicResource LanguageSection}"
+                           Style="{StaticResource SectionLabel}"
+                           Margin="0,12,0,0" />
+                <Grid Margin="0,7,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <RadioButton x:Name="LangRu"
+                                 Grid.Column="0"
+                                 Style="{StaticResource PillRadio}"
+                                 GroupName="Language"
+                                 Content="{DynamicResource LangRu}"
+                                 Tag="ru"
+                                 Margin="0,0,5,0"
+                                 Checked="Language_Changed" />
+                    <RadioButton x:Name="LangEn"
+                                 Grid.Column="1"
+                                 Style="{StaticResource PillRadio}"
+                                 GroupName="Language"
+                                 Content="{DynamicResource LangEn}"
+                                 Tag="en"
+                                 Checked="Language_Changed" />
                 </Grid>
             </StackPanel>
 
@@ -279,17 +304,17 @@
             <Grid Grid.Row="6" Margin="0,18,0,0">
                 <Button x:Name="TestButton"
                         Style="{StaticResource SecondaryButton}"
-                        Content="Проверить"
+                        Content="{DynamicResource Check}"
                         Click="Test_Click"
                         HorizontalAlignment="Left" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Style="{StaticResource SecondaryButton}"
-                            Content="Отмена"
+                            Content="{DynamicResource Cancel}"
                             Margin="0,0,7,0"
                             Click="Cancel_Click" />
                     <Button x:Name="SaveButton"
                             Style="{StaticResource PrimaryButton}"
-                            Content="Сохранить"
+                            Content="{DynamicResource Save}"
                             Click="Save_Click" />
                 </StackPanel>
             </Grid>

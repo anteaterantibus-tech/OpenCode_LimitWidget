@@ -21,16 +21,16 @@
 
     <Window.ContextMenu>
         <ContextMenu Opened="ContextMenu_Opened">
-            <MenuItem Header="Обновить" Click="Refresh_Click" />
-            <MenuItem Header="Настройки" Click="Settings_Click" />
+            <MenuItem Header="{DynamicResource MenuRefresh}" Click="Refresh_Click" />
+            <MenuItem Header="{DynamicResource MenuSettings}" Click="Settings_Click" />
             <Separator Style="{StaticResource MenuSeparator}" />
-            <MenuItem Header="Обычный вид" Click="ModeNormal_Click" />
-            <MenuItem Header="Компактный вид" Click="ModeCompact_Click" />
-            <MenuItem Header="В панели задач" Click="ModeTaskbar_Click" />
+            <MenuItem Header="{DynamicResource MenuNormal}" Click="ModeNormal_Click" />
+            <MenuItem Header="{DynamicResource MenuCompact}" Click="ModeCompact_Click" />
+            <MenuItem Header="{DynamicResource MenuTaskbar}" Click="ModeTaskbar_Click" />
             <Separator Style="{StaticResource MenuSeparator}" />
-            <MenuItem Header="Скрыть в трей" Click="Hide_Click" />
+            <MenuItem Header="{DynamicResource MenuHide}" Click="Hide_Click" />
             <Separator Style="{StaticResource MenuSeparator}" />
-            <MenuItem Header="Выход" Click="Exit_Click" />
+            <MenuItem Header="{DynamicResource MenuExit}" Click="Exit_Click" />
         </ContextMenu>
     </Window.ContextMenu>
 
@@ -70,8 +70,8 @@
                         <Button Style="{StaticResource LogoButton}"
                                 Width="30"
                                 Height="30"
-                                ToolTip="Открыть статистику OpenCode"
-                                AutomationProperties.Name="Открыть статистику OpenCode"
+                                ToolTip="{DynamicResource TipOpenStats}"
+                                AutomationProperties.Name="{DynamicResource TipOpenStats}"
                                 Click="ConsoleLink_Click">
                             <Image Source="assets/logo.png"
                                    Width="30"
@@ -102,8 +102,8 @@
                         <Button x:Name="CompactButton"
                                 Style="{StaticResource IconButton}"
                                 Click="CompactToggle_Click"
-                                ToolTip="Компактный режим"
-                                AutomationProperties.Name="Компактный режим">
+                                ToolTip="{DynamicResource TipCompact}"
+                                AutomationProperties.Name="{DynamicResource TipCompact}">
                             <TextBlock Text="&#xE70D;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="10" />
@@ -111,8 +111,8 @@
                         <Button x:Name="RefreshButton"
                                 Style="{StaticResource IconButton}"
                                 Click="Refresh_Click"
-                                ToolTip="Обновить"
-                                AutomationProperties.Name="Обновить">
+                                ToolTip="{DynamicResource TipRefresh}"
+                                AutomationProperties.Name="{DynamicResource TipRefresh}">
                             <TextBlock x:Name="RefreshGlyph"
                                        Text="&#xE72C;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
@@ -122,8 +122,8 @@
                         <Button x:Name="SettingsButton"
                                 Style="{StaticResource IconButton}"
                                 Click="Settings_Click"
-                                ToolTip="Настройки"
-                                AutomationProperties.Name="Настройки">
+                                ToolTip="{DynamicResource TipSettings}"
+                                AutomationProperties.Name="{DynamicResource TipSettings}">
                             <TextBlock Text="&#xE713;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="12" />
@@ -131,8 +131,8 @@
                         <Button x:Name="CloseButton"
                                 Style="{StaticResource IconButton}"
                                 Click="Hide_Click"
-                                ToolTip="Скрыть в трей"
-                                AutomationProperties.Name="Скрыть в трей">
+                                ToolTip="{DynamicResource TipHide}"
+                                AutomationProperties.Name="{DynamicResource TipHide}">
                             <TextBlock Text="&#xE711;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="10" />
@@ -150,9 +150,9 @@
                                    Foreground="{StaticResource WarningBrush}"
                                    Margin="0,0,6,0"
                                    VerticalAlignment="Center"
-                                   ToolTip="Подключение к opencode.ai" />
+                                   ToolTip="{DynamicResource TipConnection}" />
                         <TextBlock x:Name="SubtitleText"
-                                   Text="Подключение..."
+                                   Text="{DynamicResource Connecting}"
                                    FontSize="10.5"
                                    Foreground="{StaticResource MutedBrush}"
                                    MaxWidth="250"
@@ -172,7 +172,7 @@
                                 Margin="0,0,7,0"
                                 Cursor="Hand"
                                 MouseLeftButtonUp="StatusChip_Click"
-                                ToolTip="Состояние OpenCode">
+                                ToolTip="{DynamicResource TipLoad}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="LoadChipIcon"
                                            Text="&#xE9D9;"
@@ -182,7 +182,7 @@
                                            VerticalAlignment="Center"
                                            Margin="0,0,4,0" />
                                 <TextBlock x:Name="LoadChipText"
-                                           Text="Нагрузка"
+                                           Text="{DynamicResource Load}"
                                            FontSize="9"
                                            FontWeight="SemiBold"
                                            Foreground="{StaticResource WarningBrush}"
@@ -223,7 +223,7 @@
                                 Style="{StaticResource SecondaryButton}"
                                 FontSize="10"
                                 Padding="8,4"
-                                Content="Повторить"
+                                Content="{DynamicResource Retry}"
                                 Click="ErrorAction_Click"
                                 VerticalAlignment="Center" />
                     </Grid>
@@ -257,7 +257,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid>
-                        <TextBlock Text="Сегодня"
+                        <TextBlock Text="{DynamicResource Today}"
                                    FontSize="10.5"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center" />
@@ -277,7 +277,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Запросы"
+                            <TextBlock Text="{DynamicResource Requests}"
                                        FontSize="9"
                                        Foreground="{StaticResource FaintBrush}" />
                             <TextBlock x:Name="RequestsValue"
@@ -287,7 +287,7 @@
                                        Margin="0,1,0,0" />
                         </StackPanel>
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="Токены"
+                            <TextBlock Text="{DynamicResource Tokens}"
                                        FontSize="9"
                                        Foreground="{StaticResource FaintBrush}" />
                             <TextBlock x:Name="TokensValue"
@@ -297,7 +297,7 @@
                                        Margin="0,1,0,0" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Стоимость"
+                            <TextBlock Text="{DynamicResource Cost}"
                                        FontSize="9"
                                        Foreground="{StaticResource FaintBrush}" />
                             <TextBlock x:Name="CostValue"
@@ -312,7 +312,7 @@
                 <!-- Footer -->
                 <Grid Grid.Row="6" Margin="0,12,0,0">
                     <TextBlock x:Name="FooterText"
-                               Text="Автообновление: 60 с"
+                               Text=""
                                FontSize="9"
                                Foreground="{StaticResource FaintBrush}"
                                VerticalAlignment="Center" />
@@ -323,7 +323,7 @@
                             Foreground="{StaticResource FaintBrush}"
                             Content="console"
                             Click="ConsoleLink_Click"
-                            ToolTip="Открыть OpenCode Console" />
+                            ToolTip="{DynamicResource TipOpenConsole}" />
                 </Grid>
             </Grid>
         </Border>
@@ -361,8 +361,8 @@
                         <Button Style="{StaticResource LogoButton}"
                                 Width="20"
                                 Height="20"
-                                ToolTip="Открыть статистику OpenCode"
-                                AutomationProperties.Name="Открыть статистику OpenCode"
+                                ToolTip="{DynamicResource TipOpenStats}"
+                                AutomationProperties.Name="{DynamicResource TipOpenStats}"
                                 Click="ConsoleLink_Click">
                             <Image Source="assets/logo.png"
                                    Width="20"
@@ -394,7 +394,7 @@
                                    Foreground="{StaticResource WarningBrush}"
                                    Margin="7,0,0,0"
                                    VerticalAlignment="Center"
-                                   ToolTip="Подключение к opencode.ai" />
+                                   ToolTip="{DynamicResource TipConnection}" />
                         <TextBlock x:Name="CompactLoadIcon"
                                    Text="&#xE9D9;"
                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
@@ -405,7 +405,7 @@
                                    Visibility="Collapsed"
                                    Cursor="Hand"
                                    MouseLeftButtonUp="LoadGroup_Click"
-                                   ToolTip="Нагрузка OpenCode" />
+                                   ToolTip="{DynamicResource TipLoad}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -414,8 +414,8 @@
                                 Width="24"
                                 Height="24"
                                 Click="Settings_Click"
-                                ToolTip="Настройки"
-                                AutomationProperties.Name="Настройки">
+                                ToolTip="{DynamicResource TipSettings}"
+                                AutomationProperties.Name="{DynamicResource TipSettings}">
                             <TextBlock Text="&#xE713;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="11" />
@@ -425,8 +425,8 @@
                                 Width="24"
                                 Height="24"
                                 Click="CompactToggle_Click"
-                                ToolTip="Обычный режим"
-                                AutomationProperties.Name="Обычный режим">
+                                ToolTip="{DynamicResource TipNormal}"
+                                AutomationProperties.Name="{DynamicResource TipNormal}">
                             <TextBlock Text="&#xE70E;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="10" />
@@ -436,8 +436,8 @@
                                 Width="24"
                                 Height="24"
                                 Click="Hide_Click"
-                                ToolTip="Скрыть в трей"
-                                AutomationProperties.Name="Скрыть в трей">
+                                ToolTip="{DynamicResource TipHide}"
+                                AutomationProperties.Name="{DynamicResource TipHide}">
                             <TextBlock Text="&#xE711;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        FontSize="9" />
@@ -483,7 +483,7 @@
                 <!-- Footer -->
                 <Grid Grid.Row="3" Margin="0,8,0,0">
                     <TextBlock x:Name="CompactTodayText"
-                               Text="Сегодня: -"
+                               Text="{DynamicResource TodayDash}"
                                FontSize="8.5"
                                Foreground="{StaticResource MutedBrush}"
                                VerticalAlignment="Center" />
@@ -521,8 +521,8 @@
                         Width="18"
                         Height="18"
                         VerticalAlignment="Center"
-                        ToolTip="Открыть статистику OpenCode"
-                        AutomationProperties.Name="Открыть статистику OpenCode"
+                        ToolTip="{DynamicResource TipOpenStats}"
+                        AutomationProperties.Name="{DynamicResource TipOpenStats}"
                         Click="ConsoleLink_Click">
                     <Image Source="assets/logo.png"
                            Width="18"
@@ -549,7 +549,7 @@
                             Margin="10,0,0,0"
                             VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
-                        <TextBlock Text="5ч"
+                        <TextBlock Text="{DynamicResource FiveHourShort}"
                                    FontSize="8.5"
                                    Foreground="{StaticResource FaintBrush}"
                                    VerticalAlignment="Center" />
@@ -561,7 +561,7 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
-                        <TextBlock Text="нед"
+                        <TextBlock Text="{DynamicResource WeekShort}"
                                    FontSize="8.5"
                                    Foreground="{StaticResource FaintBrush}"
                                    VerticalAlignment="Center" />
@@ -573,7 +573,7 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="мес"
+                        <TextBlock Text="{DynamicResource MonthShort}"
                                    FontSize="8.5"
                                    Foreground="{StaticResource FaintBrush}"
                                    VerticalAlignment="Center" />
@@ -593,7 +593,7 @@
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center"
                                 Margin="0,0,10,0"
-                                ToolTip="Подключение к opencode.ai">
+                                ToolTip="{DynamicResource TipConnection}">
                         <TextBlock x:Name="TaskbarNetIcon"
                                    Text="&#xE701;"
                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
@@ -601,7 +601,7 @@
                                    Foreground="{StaticResource WarningBrush}"
                                    VerticalAlignment="Center" />
                         <TextBlock x:Name="TaskbarNetLabel"
-                                   Text="сеть"
+                                   Text="{DynamicResource NetLabel}"
                                    FontSize="8"
                                    Foreground="{StaticResource MutedBrush}"
                                    Margin="3,0,0,0"
@@ -611,7 +611,7 @@
                                 VerticalAlignment="Center"
                                 Cursor="Hand"
                                 MouseLeftButtonUp="LoadGroup_Click"
-                                ToolTip="Нагрузка OpenCode">
+                                ToolTip="{DynamicResource TipLoad}">
                         <TextBlock x:Name="TaskbarLoadIcon"
                                    Text="&#xE9D9;"
                                    FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
@@ -619,7 +619,7 @@
                                    Foreground="{StaticResource MutedBrush}"
                                    VerticalAlignment="Center" />
                         <TextBlock x:Name="TaskbarLoadLabel"
-                                   Text="нагрузка"
+                                   Text="{DynamicResource LoadLabel}"
                                    FontSize="8"
                                    Foreground="{StaticResource MutedBrush}"
                                    Margin="3,0,0,0"

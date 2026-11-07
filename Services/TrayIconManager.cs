@@ -10,10 +10,14 @@ public sealed class TrayIconManager : IDisposable
     private readonly AppSettings _settings;
 
     private WinForms.NotifyIcon? _notifyIcon;
+    private WinForms.ToolStripMenuItem? _showItem;
+    private WinForms.ToolStripMenuItem? _refreshItem;
+    private WinForms.ToolStripMenuItem? _settingsItem;
     private WinForms.ToolStripMenuItem? _normalItem;
     private WinForms.ToolStripMenuItem? _compactItem;
     private WinForms.ToolStripMenuItem? _taskbarItem;
     private WinForms.ToolStripMenuItem? _startupItem;
+    private WinForms.ToolStripMenuItem? _exitItem;
     private Icon? _icon;
 
     public TrayIconManager(MainWindow window, SettingsStore store, AppSettings settings)
@@ -37,38 +41,42 @@ public sealed class TrayIconManager : IDisposable
             Renderer = new WinForms.ToolStripProfessionalRenderer(new DarkColorTable()),
         };
 
-        var showItem = new WinForms.ToolStripMenuItem("Показать виджет")
+        var showItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayShow"))
         {
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
         };
         showItem.Click += (_, _) => OnUi(_window.ShowFromTray);
+        _showItem = showItem;
 
-        var refreshItem = new WinForms.ToolStripMenuItem("Обновить");
+        var refreshItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayRefresh"));
         refreshItem.Click += (_, _) => OnUi(() => _ = _window.RefreshAsync());
+        _refreshItem = refreshItem;
 
-        var settingsItem = new WinForms.ToolStripMenuItem("Настройки");
+        var settingsItem = new WinForms.ToolStripMenuItem(Loc.Get("TraySettings"));
         settingsItem.Click += (_, _) => OnUi(_window.OpenSettings);
+        _settingsItem = settingsItem;
 
-        _normalItem = new WinForms.ToolStripMenuItem("Обычный вид");
+        _normalItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayNormal"));
         _normalItem.Click += (_, _) => OnUi(() => _window.SetMode(WidgetMode.Normal));
 
-        _compactItem = new WinForms.ToolStripMenuItem("Компактный вид");
+        _compactItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayCompact"));
         _compactItem.Click += (_, _) => OnUi(() => _window.SetMode(WidgetMode.Compact));
 
-        _taskbarItem = new WinForms.ToolStripMenuItem("В панели задач");
+        _taskbarItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayTaskbar"));
         _taskbarItem.Click += (_, _) => OnUi(() => _window.SetMode(WidgetMode.Taskbar));
 
-        _startupItem = new WinForms.ToolStripMenuItem("Запускать с Windows")
+        _startupItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayStartup"))
         {
             Checked = StartupManager.IsEnabled(),
         };
         _startupItem.Click += (_, _) => OnUi(ToggleStartup);
 
-        var exitItem = new WinForms.ToolStripMenuItem("Выход")
+        var exitItem = new WinForms.ToolStripMenuItem(Loc.Get("TrayExit"))
         {
             ForeColor = Color.FromArgb(255, 150, 150),
         };
         exitItem.Click += (_, _) => OnUi(_window.RequestExit);
+        _exitItem = exitItem;
 
         menu.Items.Add(showItem);
         menu.Items.Add(refreshItem);
@@ -100,12 +108,27 @@ public sealed class TrayIconManager : IDisposable
         _notifyIcon = new WinForms.NotifyIcon
         {
             Icon = _icon,
-            Text = "OpenCode Go - лимиты подписки",
+            Text = Loc.Get("TrayTooltip"),
             Visible = true,
             ContextMenuStrip = menu,
         };
 
         _notifyIcon.DoubleClick += (_, _) => OnUi(_window.ShowFromTray);
+
+        Loc.Changed += Relocalize;
+    }
+
+    private void Relocalize()
+    {
+        if (_showItem is not null) _showItem.Text = Loc.Get("TrayShow");
+        if (_refreshItem is not null) _refreshItem.Text = Loc.Get("TrayRefresh");
+        if (_settingsItem is not null) _settingsItem.Text = Loc.Get("TraySettings");
+        if (_normalItem is not null) _normalItem.Text = Loc.Get("TrayNormal");
+        if (_compactItem is not null) _compactItem.Text = Loc.Get("TrayCompact");
+        if (_taskbarItem is not null) _taskbarItem.Text = Loc.Get("TrayTaskbar");
+        if (_startupItem is not null) _startupItem.Text = Loc.Get("TrayStartup");
+        if (_exitItem is not null) _exitItem.Text = Loc.Get("TrayExit");
+        if (_notifyIcon is not null) _notifyIcon.Text = Loc.Get("TrayTooltip");
     }
 
     private void ToggleStartup()
@@ -157,6 +180,8 @@ public sealed class TrayIconManager : IDisposable
 
     public void Dispose()
     {
+        Loc.Changed -= Relocalize;
+
         if (_notifyIcon is not null)
         {
             _notifyIcon.Visible = false;

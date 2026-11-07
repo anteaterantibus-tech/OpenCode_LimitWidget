@@ -41,7 +41,7 @@ public partial class MainWindow : Window
     private static readonly TimeSpan RateLimitRetryInterval = TimeSpan.FromSeconds(60);
     private static readonly TimeSpan ServerRetryInterval = TimeSpan.FromSeconds(15);
 
-    private static readonly CultureInfo Ru = CultureInfo.GetCultureInfo("ru-RU");
+    private static CultureInfo Ru => Loc.Culture;
 
     private static readonly Dictionary<string, string> ModelNames = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -138,6 +138,9 @@ public partial class MainWindow : Window
         _foregroundWatcher.Start();
         Closed += (_, _) => _foregroundWatcher.Dispose();
 
+        Loc.Changed += OnLanguageChanged;
+        Closed += (_, _) => Loc.Changed -= OnLanguageChanged;
+
         ApplySettings();
         ApplyMode(initial: true);
         PositionWindow();
@@ -171,9 +174,9 @@ public partial class MainWindow : Window
         {
             ShowEmptyState();
             ShowBanner(
-                "Ключ OpenCode Go не найден. Вставьте его в настройках.",
+                Loc.Get("ErrNoKey"),
                 ErrorAction.Settings,
-                "Нужен API-ключ");
+                Loc.Get("ErrNoKeyTitle"));
             SetLive(false);
             PromptForSettings();
             return;
@@ -184,6 +187,17 @@ public partial class MainWindow : Window
 
     private TimeSpan NormalRefreshInterval =>
         TimeSpan.FromSeconds(Math.Clamp(_settings.RefreshSeconds, 30, 3600));
+
+    private void OnLanguageChanged()
+    {
+        if (_lastSnapshot is not null)
+            ApplySnapshot(_lastSnapshot, cached: true);
+
+        if (_lastServiceStatus is not null)
+            ApplyServiceStatus(_lastServiceStatus, _lastSnapshot?.Activity);
+
+        _ = RefreshAsync();
+    }
 
     private void ResetRefreshInterval()
     {
@@ -196,7 +210,7 @@ public partial class MainWindow : Window
         _refreshTimer.Interval = NormalRefreshInterval;
         _refreshTimer.Start();
         _api = new GoApiClient(_store.GetApiKey(_settings) ?? "");
-        FooterText.Text = "Автообновление: " + FormatInterval(_settings.RefreshSeconds);
+        FooterText.Text = Loc.Format("AutoRefreshFormat", FormatInterval(_settings.RefreshSeconds));
         UpdateAlertGlow(MaxAlertLevel(_lastSnapshot?.Status?.Access?.Meters));
         LimitSoundPlayer.Preload(_settings.NotifySoundId);
 
@@ -223,9 +237,9 @@ public partial class MainWindow : Window
         {
             ShowEmptyState();
             ShowBanner(
-                "Ключ OpenCode Go не найден. Вставьте его в настройках.",
+                Loc.Get("ErrNoKey"),
                 ErrorAction.Settings,
-                "Нужен API-ключ");
+                Loc.Get("ErrNoKeyTitle"));
             SetLive(false);
             return;
         }
@@ -280,9 +294,9 @@ public partial class MainWindow : Window
             {
                 App.Log(ex);
                 ShowBanner(
-                    "Не удалось обновить данные. Показаны последние значения.",
+                    Loc.Get("ErrUpdate"),
                     ErrorAction.Retry,
-                    "Ошибка обновления");
+                    Loc.Get("ErrUpdateTitle"));
                 SetLive(false);
                 _refreshTimer.Interval = ServerRetryInterval;
             }
@@ -303,13 +317,13 @@ public partial class MainWindow : Window
 
         if (status?.Access?.Meters is { } meters)
         {
-            ApplyMeter(FiveHourMeter, meters.FiveHour, "5 часов", "5-часовое окно");
-            ApplyMeter(WeekMeter, meters.Week, "Неделя", "Недельное окно");
-            ApplyMeter(MonthMeter, meters.Month, "Месяц", "Месячное окно");
+            ApplyMeter(FiveHourMeter, meters.FiveHour, Loc.Get("FiveHours"));
+            ApplyMeter(WeekMeter, meters.Week, Loc.Get("Week"));
+            ApplyMeter(MonthMeter, meters.Month, Loc.Get("Month"));
 
-            ApplyCompactMeter(CompactFiveHour, meters.FiveHour, "5ч", "5-часовое окно");
-            ApplyCompactMeter(CompactWeek, meters.Week, "нед", "Недельное окно");
-            ApplyCompactMeter(CompactMonth, meters.Month, "мес", "Месячное окно");
+            ApplyCompactMeter(CompactFiveHour, meters.FiveHour, Loc.Get("FiveHourShort"));
+            ApplyCompactMeter(CompactWeek, meters.Week, Loc.Get("WeekShort"));
+            ApplyCompactMeter(CompactMonth, meters.Month, Loc.Get("MonthShort"));
 
             var plan = PlanName(status.Product);
             PlanBadge.Text = plan;
@@ -321,16 +335,16 @@ public partial class MainWindow : Window
             var renewal = status.Access.EndsAt.ToLocalTime().ToString("d MMM", Ru);
             var ended = status.CancelAtPeriodEnd || status.Access.CancelAtPeriodEnd;
             var planText = ended
-                ? $"{plan} · доступ до {renewal}"
-                : $"{plan} · продление {renewal}";
+                ? $"{plan} · {Loc.Format("PlanEnds", renewal)}"
+                : $"{plan} · {Loc.Format("PlanRenewal", renewal)}";
 
             SubtitleText.Text = planText;
             var planTooltip = planText;
 
             if (status.UseBalance)
             {
-                SubtitleText.Text += " · extra";
-                planTooltip += " · extra usage";
+                SubtitleText.Text += Loc.Get("PlanExtra");
+                planTooltip += Loc.Get("PlanExtraUsage");
             }
 
             PlanBadgeHost.ToolTip = planTooltip;
@@ -351,14 +365,14 @@ public partial class MainWindow : Window
             TaskbarPlanBadge.ToolTip = null;
 
             UpdateTaskbarMeters(null);
-            ShowEmptyState("нет данных");
-            SubtitleText.Text = "Подписка Go не активна";
+            ShowEmptyState(Loc.Get("NoData"));
+            SubtitleText.Text = Loc.Get("GoInactive");
 
             if (!cached)
                 ShowBanner(
-                    "Активная подписка Go не найдена. Проверьте её в консоли.",
+                    Loc.Get("ErrNoSub"),
                     ErrorAction.Console,
-                    "Нет подписки Go");
+                    Loc.Get("ErrNoSubTitle"));
         }
 
         UpdateAlertGlow(MaxAlertLevel(status?.Access?.Meters));
@@ -366,38 +380,46 @@ public partial class MainWindow : Window
         UpdatedText.Text = FormatUpdated(snapshot.FetchedAt);
         CompactUpdatedText.Text = FormatUpdated(snapshot.FetchedAt);
         FooterText.Text = cached
-            ? "Данные из кэша · обновление..."
-            : "Автообновление: " + FormatInterval(_settings.RefreshSeconds);
+            ? Loc.Get("CachedRefreshing")
+            : Loc.Format("AutoRefreshFormat", FormatInterval(_settings.RefreshSeconds));
     }
 
-    private static void ApplyMeter(RingMeter ring, GoMeter? meter, string title, string caption)
+    private static void ApplyMeter(RingMeter ring, GoMeter? meter, string title)
     {
         if (meter is null || meter.LimitMicroCents <= 0)
         {
-            ring.SetEmpty(title, "нет данных");
+            ring.SetEmpty(title, Loc.Get("NoData"));
             return;
         }
 
         var resetAt = meter.ResetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
-        var tooltip =
-            $"{caption}: {FormatUsd(meter.UsedUsd)} из {FormatUsd(meter.LimitUsd)}. " +
-            $"Сброс {resetAt} (через {FormatCountdown(meter.ResetsAt)}).";
+        var tooltip = Loc.Format(
+            "MeterTooltipFormat",
+            title,
+            FormatUsd(meter.UsedUsd),
+            FormatUsd(meter.LimitUsd),
+            resetAt,
+            FormatCountdown(meter.ResetsAt));
 
         ring.SetData(meter.Percent, title, FormatCountdown(meter.ResetsAt), tooltip);
     }
 
-    private static void ApplyCompactMeter(MiniMeter meter, GoMeter? data, string title, string caption)
+    private static void ApplyCompactMeter(MiniMeter meter, GoMeter? data, string title)
     {
         if (data is null || data.LimitMicroCents <= 0)
         {
-            meter.SetEmpty(title, "нет данных");
+            meter.SetEmpty(title, Loc.Get("NoData"));
             return;
         }
 
         var resetAt = data.ResetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
-        var tooltip =
-            $"{caption}: {FormatUsd(data.UsedUsd)} из {FormatUsd(data.LimitUsd)}. " +
-            $"Сброс {resetAt} (через {FormatCountdown(data.ResetsAt)}).";
+        var tooltip = Loc.Format(
+            "MeterTooltipFormat",
+            title,
+            FormatUsd(data.UsedUsd),
+            FormatUsd(data.LimitUsd),
+            resetAt,
+            FormatCompactCountdown(data.ResetsAt));
 
         meter.SetData(data.Percent, title, FormatCompactCountdown(data.ResetsAt), tooltip);
     }
@@ -426,10 +448,14 @@ public partial class MainWindow : Window
         SetTaskbarMeterColor(TaskbarWeek, meters.Week?.Percent);
         SetTaskbarMeterColor(TaskbarMonth, meters.Month?.Percent);
 
-        var tooltip =
-            $"OpenCode Go · 5ч {TaskbarFiveHour.Text} ({FormatMeterUsd(meters.FiveHour)}) · " +
-            $"нед {TaskbarWeek.Text} ({FormatMeterUsd(meters.Week)}) · " +
-            $"мес {TaskbarMonth.Text} ({FormatMeterUsd(meters.Month)})";
+        var tooltip = Loc.Format(
+            "TaskbarTooltipFormat",
+            TaskbarFiveHour.Text,
+            FormatMeterUsd(meters.FiveHour),
+            TaskbarWeek.Text,
+            FormatMeterUsd(meters.Week),
+            TaskbarMonth.Text,
+            FormatMeterUsd(meters.Month));
 
         if (!string.IsNullOrEmpty(_loadSummary))
             tooltip += "\n" + _loadSummary;
@@ -476,8 +502,8 @@ public partial class MainWindow : Window
 
         if (level == LoadLevel.Ok)
         {
-            _loadSummary = "Нагрузка: в норме";
-            var okTooltip = "OpenCode Go: нагрузка в норме";
+            _loadSummary = Loc.Get("LoadInNorm");
+            var okTooltip = Loc.Get("LoadInNormTooltip");
 
             if (forecast is not null)
             {
@@ -498,31 +524,31 @@ public partial class MainWindow : Window
 
         var lines = new List<string>
         {
-            level == LoadLevel.Outage
-                ? "OpenCode Go: сбой"
-                : "OpenCode Go: повышенная нагрузка",
+            Loc.Get(level == LoadLevel.Outage ? "LoadOutageTitle" : "LoadDegradedTitle"),
         };
 
         if (reason.Length > 0)
-            lines.Add("Причина: " + reason);
+            lines.Add(Loc.Format("LoadReasonFormat", reason));
 
         if (models.Length > 0)
-            lines.Add("Модели: " + string.Join(", ", models));
+            lines.Add(Loc.Format("LoadModelsFormat", string.Join(", ", models)));
 
         if (forecast is not null)
-            lines.Add("Прогноз: " + forecast);
+            lines.Add(Loc.Format("LoadForecastFormat", forecast));
 
         if (status.Stale)
-            lines.Add("Данные статуса могли устареть");
+            lines.Add(Loc.Get("LoadStale"));
 
-        lines.Add("Обновлено: " + DateTimeOffset.Now.ToString("HH:mm", Ru));
+        lines.Add(Loc.Format("UpdatedFormat", DateTimeOffset.Now.ToString("HH:mm", Ru)));
 
         _loadSummary = level == LoadLevel.Outage
-            ? "Нагрузка: сбой"
-            : $"Нагрузка: {(reason.Length > 0 ? reason : "повышена")}";
+            ? Loc.Get("LoadOutageShort")
+            : Loc.Format(
+                "LoadDegradedShort",
+                reason.Length > 0 ? reason : Loc.Get("LoadRaised"));
 
         if (forecast is not null)
-            _loadSummary += "\nПрогноз: " + forecast;
+            _loadSummary += "\n" + Loc.Format("LoadForecastFormat", forecast);
 
         ApplyLoadState(level, string.Join("\n", lines));
     }
@@ -538,8 +564,8 @@ public partial class MainWindow : Window
             : "";
 
         return forecast.HasPattern
-            ? $"{prefix}пик {forecast.PeakRange}, спокойнее {forecast.QuietRange}"
-            : $"{prefix}выраженного пика по часам нет";
+            ? prefix + Loc.Format("ForecastPeakFormat", forecast.PeakRange, forecast.QuietRange)
+            : prefix + Loc.Get("ForecastNoPeak");
     }
 
     private void ApplyLoadState(LoadLevel level, string? tooltip)
@@ -561,7 +587,7 @@ public partial class MainWindow : Window
         TaskbarLoadIcon.Foreground = brush;
         TaskbarLoadLabel.Foreground = degraded ? brush : (Brush)FindResource("MutedBrush");
 
-        LoadChipText.Text = level == LoadLevel.Outage ? "Сбой" : "Нагрузка";
+        LoadChipText.Text = Loc.Get(level == LoadLevel.Outage ? "Outage" : "Load");
         LoadChipText.Foreground = brush;
 
         if (brush is SolidColorBrush solid)
@@ -581,10 +607,10 @@ public partial class MainWindow : Window
     {
         return reason?.Trim().ToLowerInvariant() switch
         {
-            "upstream" => "проблема на стороне провайдера",
-            "latency" => "повышенные задержки",
-            "errors" => "ошибки запросов",
-            "availability" => "недоступность",
+            "upstream" => Loc.Get("ReasonUpstream"),
+            "latency" => Loc.Get("ReasonLatency"),
+            "errors" => Loc.Get("ReasonErrors"),
+            "availability" => Loc.Get("ReasonAvailability"),
             "none" or null or "" => "",
             _ => reason!,
         };
@@ -594,7 +620,7 @@ public partial class MainWindow : Window
     {
         return meter is null
             ? "-"
-            : $"{FormatUsd(meter.UsedUsd)} из {FormatUsd(meter.LimitUsd)}";
+            : $"{FormatUsd(meter.UsedUsd)} {Loc.Get("UsdOf")} {FormatUsd(meter.LimitUsd)}";
     }
 
     private static string FormatShortPercent(double? percent)
@@ -622,15 +648,17 @@ public partial class MainWindow : Window
             RequestsValue.Text = "-";
             TokensValue.Text = "-";
             CostValue.Text = "-";
-            CompactTodayText.Text = "Сегодня: -";
+            CompactTodayText.Text = Loc.Get("TodayDash");
         }
         else
         {
             RequestsValue.Text = day.TotalRequests.ToString("N0", Ru);
             TokensValue.Text = FormatTokens(day.TotalTokens);
             CostValue.Text = FormatUsd(day.TotalCostMicroCents / 100_000_000m);
-            CompactTodayText.Text =
-                $"Сегодня: {day.TotalRequests.ToString("N0", Ru)} · {FormatUsd(day.TotalCostMicroCents / 100_000_000m)}";
+            CompactTodayText.Text = Loc.Format(
+                "TodayCompactFormat",
+                day.TotalRequests.ToString("N0", Ru),
+                FormatUsd(day.TotalCostMicroCents / 100_000_000m));
         }
 
         var top = activity?.Models?
@@ -658,55 +686,57 @@ public partial class MainWindow : Window
         switch (exception.Kind)
         {
             case GoApiErrorKind.Unauthorized:
-                SubtitleText.Text = "Нет доступа";
+                SubtitleText.Text = Loc.Get("ErrNoAccess");
                 ShowBanner(
-                    "Ключ не подходит или у него нет доступа к статистике. Проверьте ключ в настройках.",
+                    Loc.Get("ErrBadKey"),
                     ErrorAction.Settings,
-                    "Ключ не подходит");
+                    Loc.Get("ErrBadKeyTitle"));
                 break;
 
             case GoApiErrorKind.RateLimited:
                 ShowBanner(
-                    "Слишком много запросов. Подождите минуту и попробуйте снова.",
+                    Loc.Get("ErrRateLimit"),
                     ErrorAction.Retry,
-                    "Слишком много запросов");
+                    Loc.Get("ErrRateLimitTitle"));
                 break;
 
             case GoApiErrorKind.Network:
                 ShowBanner(
-                    "Нет связи с opencode.ai. Показаны последние данные.",
+                    Loc.Get("ErrNetwork"),
                     ErrorAction.Retry,
-                    "Нет связи");
+                    Loc.Get("ErrNetworkTitle"));
                 break;
 
             default:
                 ShowBanner(
-                    "Сервис временно недоступен. Показаны последние данные.",
+                    Loc.Get("ErrService"),
                     ErrorAction.Retry,
-                    "Сервис недоступен");
+                    Loc.Get("ErrServiceTitle"));
                 break;
         }
 
         if (_lastSnapshot is null)
         {
-            ShowEmptyState("нет данных");
-            SubtitleText.Text = "Нет данных";
+            ShowEmptyState(Loc.Get("NoData"));
+            SubtitleText.Text = Loc.Get("ErrNoData");
         }
     }
 
-    private void ShowEmptyState(string message = "нет ключа")
+    private void ShowEmptyState(string? message = null)
     {
-        FiveHourMeter.SetEmpty("5 часов", message);
-        WeekMeter.SetEmpty("Неделя", message);
-        MonthMeter.SetEmpty("Месяц", message);
-        CompactFiveHour.SetEmpty("5ч", message);
-        CompactWeek.SetEmpty("нед", message);
-        CompactMonth.SetEmpty("мес", message);
+        message ??= Loc.Get("NoKey");
+
+        FiveHourMeter.SetEmpty(Loc.Get("FiveHours"), message);
+        WeekMeter.SetEmpty(Loc.Get("Week"), message);
+        MonthMeter.SetEmpty(Loc.Get("Month"), message);
+        CompactFiveHour.SetEmpty(Loc.Get("FiveHourShort"), message);
+        CompactWeek.SetEmpty(Loc.Get("WeekShort"), message);
+        CompactMonth.SetEmpty(Loc.Get("MonthShort"), message);
         RequestsValue.Text = "-";
         TokensValue.Text = "-";
         CostValue.Text = "-";
         TopModelText.Text = "";
-        CompactTodayText.Text = "Сегодня: -";
+        CompactTodayText.Text = Loc.Get("TodayDash");
         TaskbarFiveHour.Text = "-";
         TaskbarWeek.Text = "-";
         TaskbarMonth.Text = "-";
@@ -806,9 +836,9 @@ public partial class MainWindow : Window
 
         var entries = new (string Key, string Short, GoMeter? Meter)[]
         {
-            ("fiveHour", "5ч", meters.FiveHour),
-            ("week", "нед", meters.Week),
-            ("month", "мес", meters.Month),
+            ("fiveHour", Loc.Get("FiveHourShort"), meters.FiveHour),
+            ("week", Loc.Get("WeekShort"), meters.Week),
+            ("month", Loc.Get("MonthShort"), meters.Month),
         };
 
         var initialize = !_limitStateInitialized;
@@ -849,8 +879,8 @@ public partial class MainWindow : Window
 
         var reset = FormatCountdown(top.Meter.ResetsAt);
         var text = top.Level >= 100
-            ? $"{top.Short}: лимит исчерпан · сброс {reset}"
-            : $"{top.Short}: {FormatAlertPercent(top.Meter.Percent)} · сброс {reset}";
+            ? Loc.Format("AlertLimitFormat", top.Short, reset)
+            : Loc.Format("AlertPercentFormat", top.Short, FormatAlertPercent(top.Meter.Percent), reset);
 
         if (_fullscreenActive)
             return;
@@ -876,7 +906,7 @@ public partial class MainWindow : Window
 
     public void ShowTestNotification(string? soundId = null, bool playSound = true)
     {
-        const string text = "5ч: 92% · сброс 1 ч 10 мин";
+        var text = Loc.Get("TestNotificationText");
 
         _limitToast ??= new LimitToastWindow();
         var fallbackWidth = _settings.CompactMode ? CompactWindowWidth : NormalWindowWidth;
@@ -968,9 +998,9 @@ public partial class MainWindow : Window
         ErrorText.Text = text;
         ErrorActionButton.Content = action switch
         {
-            ErrorAction.Settings => "Настройки",
-            ErrorAction.Console => "Консоль",
-            _ => "Повторить",
+            ErrorAction.Settings => Loc.Get("ActionSettings"),
+            ErrorAction.Console => Loc.Get("ActionConsole"),
+            _ => Loc.Get("Retry"),
         };
         ErrorBanner.Visibility = Visibility.Visible;
 
@@ -1589,18 +1619,20 @@ public partial class MainWindow : Window
     {
         var left = resetsAt - DateTimeOffset.Now;
         if (left <= TimeSpan.Zero)
-            return "сброс";
+            return Loc.Get("CountdownReset");
 
         if (left.TotalDays >= 1)
         {
             var days = (int)left.TotalDays;
-            return left.Hours > 0 ? $"{days} д {left.Hours} ч" : $"{days} дн";
+            return left.Hours > 0
+                ? Loc.Format("CountdownDaysHours", days, left.Hours)
+                : Loc.Format("CountdownDays", days);
         }
 
         if (left.TotalHours >= 1)
-            return $"{(int)left.TotalHours} ч {left.Minutes} мин";
+            return Loc.Format("CountdownHoursMinutes", (int)left.TotalHours, left.Minutes);
 
-        return $"{Math.Max(1, left.Minutes)} мин";
+        return Loc.Format("CountdownMinutes", Math.Max(1, left.Minutes));
     }
 
     private static string FormatUpdated(DateTimeOffset fetchedAt)
@@ -1615,21 +1647,23 @@ public partial class MainWindow : Window
     {
         var left = resetsAt - DateTimeOffset.Now;
         if (left <= TimeSpan.Zero)
-            return "сброс";
+            return Loc.Get("CountdownReset");
 
         if (left.TotalDays >= 10)
-            return $"{(int)left.TotalDays}д";
+            return Loc.Format("CompactDays", (int)left.TotalDays);
 
         if (left.TotalDays >= 1)
         {
             var days = (int)left.TotalDays;
-            return left.Hours > 0 ? $"{days}д {left.Hours}ч" : $"{days}д";
+            return left.Hours > 0
+                ? Loc.Format("CompactDaysHours", days, left.Hours)
+                : Loc.Format("CompactDays", days);
         }
 
         if (left.TotalHours >= 1)
-            return $"{(int)left.TotalHours}ч {left.Minutes}м";
+            return Loc.Format("CompactHoursMinutes", (int)left.TotalHours, left.Minutes);
 
-        return $"{Math.Max(1, left.Minutes)}м";
+        return Loc.Format("CompactMinutes", Math.Max(1, left.Minutes));
     }
 
     private static string FormatUsd(decimal value)
@@ -1638,25 +1672,25 @@ public partial class MainWindow : Window
             return "$" + value.ToString("0.00", Ru);
         if (value > 0)
             return "$" + value.ToString("0.000", Ru);
-        return "$0,00";
+        return "$" + 0m.ToString("0.00", Ru);
     }
 
     private static string FormatTokens(long tokens)
     {
         if (tokens >= 1_000_000)
-            return (tokens / 1_000_000d).ToString("0.0", Ru) + " млн";
+            return Loc.Format("TokensMillion", (tokens / 1_000_000d).ToString("0.0", Ru));
         if (tokens >= 1_000)
-            return (tokens / 1_000d).ToString("0.0", Ru) + " тыс.";
+            return Loc.Format("TokensThousand", (tokens / 1_000d).ToString("0.0", Ru));
         return tokens.ToString("N0", Ru);
     }
 
     private static string FormatInterval(int seconds)
     {
         if (seconds < 60)
-            return $"{seconds} с";
+            return Loc.Format("SecondsFormat", seconds);
         if (seconds < 3600)
-            return $"{seconds / 60} мин";
-        return $"{seconds / 3600} ч";
+            return Loc.Format("MinutesFormat", seconds / 60);
+        return Loc.Format("HoursFormat", seconds / 3600);
     }
 
     internal static string FriendlyModel(string model)
