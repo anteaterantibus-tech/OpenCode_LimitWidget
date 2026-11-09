@@ -52,6 +52,9 @@
     <sys:String x:Key="NoData">нет данных</sys:String>
     <sys:String x:Key="NoKey">нет ключа</sys:String>
     <sys:String x:Key="MeterTooltipFormat">Окно {0}: {1} из {2}. Сброс {3} (через {4}).</sys:String>
+    <sys:String x:Key="MeterIdleTooltipFormat">Окно {0}: {1} из {2}. Окно ещё не начато.</sys:String>
+    <sys:String x:Key="WindowIdle">окно не начато</sys:String>
+    <sys:String x:Key="WindowIdleShort">не начато</sys:String>
     <sys:String x:Key="UsdOf">из</sys:String>
     <sys:String x:Key="PlanRenewal">продление {0}</sys:String>
     <sys:String x:Key="PlanEnds">доступ до {0}</sys:String>

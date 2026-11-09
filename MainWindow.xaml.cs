@@ -98,7 +98,7 @@ public partial class MainWindow : Window
 
     private sealed class LimitState
     {
-        public DateTimeOffset ResetsAt { get; init; }
+        public DateTimeOffset? ResetsAt { get; init; }
         public int Level { get; set; }
     }
 
@@ -392,16 +392,28 @@ public partial class MainWindow : Window
             return;
         }
 
-        var resetAt = meter.ResetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
+        if (meter.ResetsAt is not { } resetsAt)
+        {
+            var idleTooltip = Loc.Format(
+                "MeterIdleTooltipFormat",
+                title,
+                FormatUsd(meter.UsedUsd),
+                FormatUsd(meter.LimitUsd));
+
+            ring.SetData(meter.Percent, title, Loc.Get("WindowIdle"), idleTooltip);
+            return;
+        }
+
+        var resetAt = resetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
         var tooltip = Loc.Format(
             "MeterTooltipFormat",
             title,
             FormatUsd(meter.UsedUsd),
             FormatUsd(meter.LimitUsd),
             resetAt,
-            FormatCountdown(meter.ResetsAt));
+            FormatCountdown(resetsAt));
 
-        ring.SetData(meter.Percent, title, FormatCountdown(meter.ResetsAt), tooltip);
+        ring.SetData(meter.Percent, title, FormatCountdown(resetsAt), tooltip);
     }
 
     private static void ApplyCompactMeter(MiniMeter meter, GoMeter? data, string title)
@@ -412,16 +424,28 @@ public partial class MainWindow : Window
             return;
         }
 
-        var resetAt = data.ResetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
+        if (data.ResetsAt is not { } resetsAt)
+        {
+            var idleTooltip = Loc.Format(
+                "MeterIdleTooltipFormat",
+                title,
+                FormatUsd(data.UsedUsd),
+                FormatUsd(data.LimitUsd));
+
+            meter.SetData(data.Percent, title, Loc.Get("WindowIdleShort"), idleTooltip);
+            return;
+        }
+
+        var resetAt = resetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
         var tooltip = Loc.Format(
             "MeterTooltipFormat",
             title,
             FormatUsd(data.UsedUsd),
             FormatUsd(data.LimitUsd),
             resetAt,
-            FormatCompactCountdown(data.ResetsAt));
+            FormatCompactCountdown(resetsAt));
 
-        meter.SetData(data.Percent, title, FormatCompactCountdown(data.ResetsAt), tooltip);
+        meter.SetData(data.Percent, title, FormatCompactCountdown(resetsAt), tooltip);
     }
 
     private void UpdateTaskbarMeters(GoMeters? meters)
@@ -875,7 +899,10 @@ public partial class MainWindow : Window
             .ThenByDescending(a => a.Meter.Percent)
             .First();
 
-        var reset = FormatCountdown(top.Meter.ResetsAt);
+        if (top.Meter.ResetsAt is not { } resetAt)
+            return;
+
+        var reset = FormatCountdown(resetAt);
         var text = top.Level >= 100
             ? Loc.Format("AlertLimitFormat", top.Short, reset)
             : Loc.Format("AlertPercentFormat", top.Short, FormatAlertPercent(top.Meter.Percent), reset);

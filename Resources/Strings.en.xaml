@@ -52,6 +52,9 @@
     <sys:String x:Key="NoData">no data</sys:String>
     <sys:String x:Key="NoKey">no key</sys:String>
     <sys:String x:Key="MeterTooltipFormat">Window {0}: {1} of {2}. Resets {3} (in {4}).</sys:String>
+    <sys:String x:Key="MeterIdleTooltipFormat">Window {0}: {1} of {2}. The window has not started yet.</sys:String>
+    <sys:String x:Key="WindowIdle">window not started</sys:String>
+    <sys:String x:Key="WindowIdleShort">not started</sys:String>
     <sys:String x:Key="UsdOf">of</sys:String>
     <sys:String x:Key="PlanRenewal">renews {0}</sys:String>
     <sys:String x:Key="PlanEnds">access until {0}</sys:String>

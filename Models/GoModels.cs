@@ -31,8 +31,8 @@ public sealed class GoMeters
 
 public sealed class GoMeter
 {
-    public DateTimeOffset StartsAt { get; set; }
-    public DateTimeOffset ResetsAt { get; set; }
+    public DateTimeOffset? StartsAt { get; set; }
+    public DateTimeOffset? ResetsAt { get; set; }
     public long LimitMicroCents { get; set; }
     public long UsedMicroCents { get; set; }
 
