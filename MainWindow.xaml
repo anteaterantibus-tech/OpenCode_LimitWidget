@@ -548,7 +548,7 @@
                             Orientation="Horizontal"
                             Margin="10,0,0,0"
                             VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <TextBlock Text="{DynamicResource FiveHourShort}"
                                    FontSize="8.5"
                                    Foreground="{StaticResource FaintBrush}"
@@ -560,7 +560,12 @@
                                    Margin="4,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                    <Border Width="1"
+                            Height="12"
+                            Background="{StaticResource DividerBrush}"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <TextBlock Text="{DynamicResource WeekShort}"
                                    FontSize="8.5"
                                    Foreground="{StaticResource FaintBrush}"
@@ -572,6 +577,11 @@
                                    Margin="4,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
+                    <Border Width="1"
+                            Height="12"
+                            Background="{StaticResource DividerBrush}"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center" />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{DynamicResource MonthShort}"
                                    FontSize="8.5"
