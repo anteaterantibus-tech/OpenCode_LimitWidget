@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
@@ -37,10 +37,6 @@ public partial class MainWindow : Window
     private const double TaskbarBarWidth = 380;
     private const double TaskbarBarHeight = 36;
 
-    private static readonly TimeSpan NetworkRetryInterval = TimeSpan.FromSeconds(10);
-    private static readonly TimeSpan RateLimitRetryInterval = TimeSpan.FromSeconds(60);
-    private static readonly TimeSpan ServerRetryInterval = TimeSpan.FromSeconds(15);
-
     private static CultureInfo Ru => Loc.Culture;
 
     private static readonly Dictionary<string, string> ModelNames = new(StringComparer.OrdinalIgnoreCase)
@@ -72,6 +68,7 @@ public partial class MainWindow : Window
 
     private GoApiClient _api;
     private readonly StatusApiClient _statusApi = new();
+    private readonly RefreshPolicy _policy = new();
     private CancellationTokenSource? _refreshCts;
     private GoSnapshot? _lastSnapshot;
     private string? _loadSummary;
@@ -177,7 +174,7 @@ public partial class MainWindow : Window
                 Loc.Get("ErrNoKey"),
                 ErrorAction.Settings,
                 Loc.Get("ErrNoKeyTitle"));
-            SetLive(false);
+            ApplyLinkState(LinkState.Down);
             PromptForSettings();
             return;
         }
@@ -225,6 +222,7 @@ public partial class MainWindow : Window
             return;
 
         _lastSnapshot = cached;
+        _policy.SeedFromCache(cached.FetchedAt);
         ApplySnapshot(cached, cached: true);
     }
 
@@ -240,7 +238,7 @@ public partial class MainWindow : Window
                 Loc.Get("ErrNoKey"),
                 ErrorAction.Settings,
                 Loc.Get("ErrNoKeyTitle"));
-            SetLive(false);
+            ApplyLinkState(LinkState.Down);
             return;
         }
 
@@ -276,7 +274,16 @@ public partial class MainWindow : Window
             _store.SaveSnapshot(snapshot);
             ApplySnapshot(snapshot, cached: false);
             EvaluateLimitAlerts(snapshot);
-            SetLive(true);
+
+            var wasNetwork = _policy.LastKind == GoApiErrorKind.Network;
+            var failures = _policy.ConsecutiveFailures;
+            _policy.OnSuccess(DateTimeOffset.Now);
+
+            if (wasNetwork && failures > 0)
+                App.LogNote($"network restored after {failures} failures");
+
+            HideBanner();
+            ApplyLinkState(LinkState.Ok);
             ResetRefreshInterval();
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
@@ -292,13 +299,27 @@ public partial class MainWindow : Window
         {
             if (generation == _refreshGeneration)
             {
-                App.Log(ex);
-                ShowBanner(
-                    Loc.Get("ErrUpdate"),
-                    ErrorAction.Retry,
-                    Loc.Get("ErrUpdateTitle"));
-                SetLive(false);
-                _refreshTimer.Interval = ServerRetryInterval;
+                var delay = _policy.OnFailure(
+                    GoApiErrorKind.Server,
+                    NormalRefreshInterval,
+                    DateTimeOffset.Now);
+
+                _refreshTimer.Interval = delay;
+
+                if (_policy.ShouldLog)
+                    App.Log(ex);
+                else
+                    App.LogNote($"unexpected failure #{_policy.ConsecutiveFailures}, retry in {delay.TotalSeconds:0}s");
+
+                ApplyLinkState(_policy.State);
+
+                if (_policy.BannerVisible)
+                    ShowBanner(
+                        Loc.Get("ErrUpdate"),
+                        ErrorAction.Retry,
+                        Loc.Get("ErrUpdateTitle"));
+                else
+                    HideBanner();
             }
         }
         finally
@@ -335,8 +356,8 @@ public partial class MainWindow : Window
             var renewal = status.Access.EndsAt.ToLocalTime().ToString("d MMM", Ru);
             var ended = status.CancelAtPeriodEnd || status.Access.CancelAtPeriodEnd;
             var planText = ended
-                ? $"{plan} · {Loc.Format("PlanEnds", renewal)}"
-                : $"{plan} · {Loc.Format("PlanRenewal", renewal)}";
+                ? $"{plan} В· {Loc.Format("PlanEnds", renewal)}"
+                : $"{plan} В· {Loc.Format("PlanRenewal", renewal)}";
 
             SubtitleText.Text = planText;
             var planTooltip = planText;
@@ -689,59 +710,88 @@ public partial class MainWindow : Window
 
         TopModelText.Text = top is null
             ? ""
-            : $"{FriendlyModel(top.Model)} · {top.TotalRequests.ToString("N0", Ru)}";
+            : $"{FriendlyModel(top.Model)} В· {top.TotalRequests.ToString("N0", Ru)}";
     }
 
     private void HandleApiError(GoApiException exception)
     {
-        App.Log(exception);
-        SetLive(false);
+        var delay = _policy.OnFailure(
+            exception.Kind,
+            NormalRefreshInterval,
+            DateTimeOffset.Now);
 
-        _refreshTimer.Interval = exception.Kind switch
+        _refreshTimer.Interval = delay;
+
+        if (_policy.ShouldLog)
+            App.Log(exception);
+        else
+            App.LogNote($"api failure #{_policy.ConsecutiveFailures} ({exception.Kind}), retry in {delay.TotalSeconds:0}s");
+
+        ApplyLinkState(_policy.State);
+
+        if (_policy.BannerVisible)
         {
-            GoApiErrorKind.Unauthorized => NormalRefreshInterval,
-            GoApiErrorKind.RateLimited => RateLimitRetryInterval,
-            GoApiErrorKind.Network => NetworkRetryInterval,
-            _ => ServerRetryInterval,
-        };
+            switch (exception.Kind)
+            {
+                case GoApiErrorKind.Unauthorized:
+                    SubtitleText.Text = Loc.Get("ErrNoAccess");
+                    ShowBanner(
+                        Loc.Get("ErrBadKey"),
+                        ErrorAction.Settings,
+                        Loc.Get("ErrBadKeyTitle"));
+                    break;
 
-        switch (exception.Kind)
-        {
-            case GoApiErrorKind.Unauthorized:
-                SubtitleText.Text = Loc.Get("ErrNoAccess");
-                ShowBanner(
-                    Loc.Get("ErrBadKey"),
-                    ErrorAction.Settings,
-                    Loc.Get("ErrBadKeyTitle"));
-                break;
+                case GoApiErrorKind.RateLimited:
+                    ShowBanner(
+                        Loc.Get("ErrRateLimit"),
+                        ErrorAction.Retry,
+                        Loc.Get("ErrRateLimitTitle"));
+                    break;
 
-            case GoApiErrorKind.RateLimited:
-                ShowBanner(
-                    Loc.Get("ErrRateLimit"),
-                    ErrorAction.Retry,
-                    Loc.Get("ErrRateLimitTitle"));
-                break;
+                case GoApiErrorKind.Network:
+                    ShowNetworkBanner();
+                    break;
 
-            case GoApiErrorKind.Network:
-                ShowBanner(
-                    Loc.Get("ErrNetwork"),
-                    ErrorAction.Retry,
-                    Loc.Get("ErrNetworkTitle"));
-                break;
-
-            default:
-                ShowBanner(
-                    Loc.Get("ErrService"),
-                    ErrorAction.Retry,
-                    Loc.Get("ErrServiceTitle"));
-                break;
+                default:
+                    ShowBanner(
+                        Loc.Get("ErrService"),
+                        ErrorAction.Retry,
+                        Loc.Get("ErrServiceTitle"));
+                    break;
+            }
         }
+        else
+        {
+            HideBanner();
+        }
+
+        if (exception.Kind == GoApiErrorKind.Network)
+            UpdateStaleFooter(delay);
 
         if (_lastSnapshot is null)
         {
             ShowEmptyState(Loc.Get("NoData"));
             SubtitleText.Text = Loc.Get("ErrNoData");
         }
+    }
+
+    private void ShowNetworkBanner()
+    {
+        var hint = Loc.Get("ErrNetworkHint");
+        var text = _policy.LastSuccessAt is { } last
+            ? Loc.Format("ErrNetworkStale", last.ToLocalTime().ToString("HH:mm", Ru)) + "\n" + hint
+            : Loc.Get("ErrNetwork") + "\n" + hint;
+
+        ShowBanner(text, ErrorAction.Retry, Loc.Get("ErrNetworkTitle"), warning: true);
+    }
+
+    private void UpdateStaleFooter(TimeSpan delay)
+    {
+        var retry = FormatInterval((int)Math.Round(delay.TotalSeconds));
+
+        FooterText.Text = _policy.LastSuccessAt is { } last
+            ? Loc.Format("StaleFooterFormat", last.ToLocalTime().ToString("HH:mm", Ru), retry)
+            : Loc.Format("StaleFooterNoDataFormat", retry);
     }
 
     private void ShowEmptyState(string? message = null)
@@ -766,13 +816,21 @@ public partial class MainWindow : Window
         StopAlertGlow();
     }
 
-    private void SetLive(bool ok)
+    private void ApplyLinkState(LinkState state)
     {
-        var brush = (Brush)(ok ? FindResource("SuccessBrush") : FindResource("DangerBrush"));
+        var brush = (Brush)FindResource(state switch
+        {
+            LinkState.Degraded => "WarningBrush",
+            LinkState.Down => "DangerBrush",
+            _ => "SuccessBrush",
+        });
+
         LiveIcon.Foreground = brush;
         CompactLiveIcon.Foreground = brush;
         TaskbarNetIcon.Foreground = brush;
-        TaskbarNetLabel.Foreground = ok ? (Brush)FindResource("MutedBrush") : brush;
+        TaskbarNetLabel.Foreground = state == LinkState.Ok
+            ? (Brush)FindResource("MutedBrush")
+            : brush;
     }
 
     private void CheckFullscreen()
@@ -1017,7 +1075,11 @@ public partial class MainWindow : Window
         return Math.Clamp(percent, 0, 100).ToString("0.#", Ru) + "%";
     }
 
-    private void ShowBanner(string text, ErrorAction action, string? compactText = null)
+    private void ShowBanner(
+        string text,
+        ErrorAction action,
+        string? compactText = null,
+        bool warning = false)
     {
         _errorAction = action;
         ErrorText.Text = text;
@@ -1027,6 +1089,25 @@ public partial class MainWindow : Window
             ErrorAction.Console => Loc.Get("ActionConsole"),
             _ => Loc.Get("Retry"),
         };
+
+        var background = warning
+            ? Color.FromArgb(0x1F, 0xFF, 0x9F, 0x0A)
+            : Color.FromArgb(0x1F, 0xFF, 0x6B, 0x6B);
+        var border = warning
+            ? Color.FromArgb(0x44, 0xFF, 0x9F, 0x0A)
+            : Color.FromArgb(0x44, 0xFF, 0x6B, 0x6B);
+        var foreground = warning
+            ? Color.FromArgb(0xFF, 0xFF, 0xE0, 0xB2)
+            : Color.FromArgb(0xFF, 0xFF, 0xC9, 0xC9);
+
+        ErrorBanner.Background = new SolidColorBrush(background);
+        ErrorBanner.BorderBrush = new SolidColorBrush(border);
+        ErrorText.Foreground = new SolidColorBrush(foreground);
+
+        CompactError.Background = new SolidColorBrush(background);
+        CompactError.BorderBrush = new SolidColorBrush(border);
+        CompactErrorText.Foreground = new SolidColorBrush(foreground);
+
         ErrorBanner.Visibility = Visibility.Visible;
 
         CompactErrorText.Text = compactText ?? text;
@@ -1098,7 +1179,8 @@ public partial class MainWindow : Window
         _limitState.Clear();
         _limitStateInitialized = false;
         HideBanner();
-        SetLive(false);
+        _policy.Reset();
+        ApplyLinkState(LinkState.Down);
 
         _refreshCts?.Cancel();
         _refreshing = false;
@@ -1505,6 +1587,7 @@ public partial class MainWindow : Window
                 OpenConsole();
                 break;
             default:
+                _policy.Reset();
                 _ = RefreshAsync();
                 break;
         }
@@ -1730,3 +1813,4 @@ public partial class MainWindow : Window
         return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(text);
     }
 }
+

@@ -8,14 +8,6 @@ using OpenCodeWidget.Models;
 
 namespace OpenCodeWidget.Services;
 
-public enum GoApiErrorKind
-{
-    Unauthorized,
-    RateLimited,
-    Server,
-    Network,
-}
-
 public sealed class GoApiException : Exception
 {
     public GoApiErrorKind Kind { get; }

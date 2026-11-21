@@ -86,6 +86,30 @@ public partial class App : Application
         }
     }
 
+    internal static void LogNote(string message)
+    {
+        try
+        {
+            var dir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "OpenCodeWidget");
+            Directory.CreateDirectory(dir);
+            var path = Path.Combine(dir, "error.log");
+
+            if (File.Exists(path) && new FileInfo(path).Length > 1_000_000)
+                File.Delete(path);
+
+            File.AppendAllText(
+                path,
+                $"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}] {message}{Environment.NewLine}",
+                Encoding.UTF8);
+        }
+        catch
+        {
+            // Logging must never bring the widget down.
+        }
+    }
+
     protected override void OnExit(ExitEventArgs e)
     {
         _tray?.Dispose();

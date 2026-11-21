@@ -74,7 +74,12 @@
     <sys:String x:Key="ErrRateLimit">Too many requests. Wait a minute and try again.</sys:String>
     <sys:String x:Key="ErrRateLimitTitle">Too many requests</sys:String>
     <sys:String x:Key="ErrNetwork">No connection to opencode.ai. Showing the last data.</sys:String>
+    <sys:String x:Key="ErrNetworkStale">No connection to opencode.ai. Data from {0}.</sys:String>
+    <sys:String x:Key="ErrNetworkHint">If the rest of the internet works, turn on a VPN: access to Cloudflare may be restricted.</sys:String>
     <sys:String x:Key="ErrNetworkTitle">No connection</sys:String>
+    <sys:String x:Key="StaleFooterFormat">Offline, data from {0}, retry in {1}</sys:String>
+    <sys:String x:Key="StaleFooterNoDataFormat">Offline, retry in {0}</sys:String>
+    <sys:String x:Key="NetworkRestored">Connection restored</sys:String>
     <sys:String x:Key="ErrService">The service is temporarily unavailable. Showing the last data.</sys:String>
     <sys:String x:Key="ErrServiceTitle">Service unavailable</sys:String>
     <sys:String x:Key="ErrNoData">No data</sys:String>

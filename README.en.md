@@ -151,6 +151,18 @@ Sounds: Soft, Bell, Wood, Drop, Tone. In settings you can preview each one
 and press Test notification to see the full card.
 Notifications are not shown in fullscreen games and movies.
 
+## Connection drops
+
+A short network drop does not turn the widget into a red error:
+
+- first failure: amber indicator, no banner, the data stays on screen;
+- second: amber indicator, the footer shows "Offline, data from HH:mm";
+- third failure or stale data: amber banner with the data time and a Retry button;
+- retries back off 15, 30, 60, 120, 240 seconds with a small jitter;
+- after recovery the banner clears in one cycle and the indicator turns green.
+
+Key errors, 429 and server failures are shown immediately, without the soft mode.
+
 ## OpenCode load
 
 The widget reads the public `status.opencode.ai` page on every refresh cycle

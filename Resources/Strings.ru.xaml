@@ -74,7 +74,12 @@
     <sys:String x:Key="ErrRateLimit">Слишком много запросов. Подождите минуту и попробуйте снова.</sys:String>
     <sys:String x:Key="ErrRateLimitTitle">Слишком много запросов</sys:String>
     <sys:String x:Key="ErrNetwork">Нет связи с opencode.ai. Показаны последние данные.</sys:String>
+    <sys:String x:Key="ErrNetworkStale">Нет связи с opencode.ai. Данные за {0}.</sys:String>
+    <sys:String x:Key="ErrNetworkHint">Если остальной интернет работает, включите VPN: доступ к Cloudflare может быть ограничен.</sys:String>
     <sys:String x:Key="ErrNetworkTitle">Нет связи</sys:String>
+    <sys:String x:Key="StaleFooterFormat">Нет связи, данные за {0}, повтор через {1}</sys:String>
+    <sys:String x:Key="StaleFooterNoDataFormat">Нет связи, повтор через {0}</sys:String>
+    <sys:String x:Key="NetworkRestored">Связь восстановлена</sys:String>
     <sys:String x:Key="ErrService">Сервис временно недоступен. Показаны последние данные.</sys:String>
     <sys:String x:Key="ErrServiceTitle">Сервис недоступен</sys:String>
     <sys:String x:Key="ErrNoData">Нет данных</sys:String>
