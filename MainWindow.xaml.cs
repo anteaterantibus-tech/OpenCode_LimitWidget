@@ -477,6 +477,16 @@ public partial class MainWindow : Window
             ? Loc.Format("PricePeakTooltipFormat", end.ToLocalTime().ToString("HH:mm", Ru))
             : Loc.Get("PriceNormalTip");
 
+        if (PeakPricing.AppliesTo(_focusModel))
+        {
+            var (first, second) = PeakPricing.LocalWindows(now, Ru);
+            tooltip += "\n" + Loc.Format(
+                "PricePeakWindowsFormat",
+                FriendlyModel(_focusModel!),
+                first,
+                second);
+        }
+
         PriceIcon.Foreground = brush;
         PriceIcon.ToolTip = tooltip;
         CompactPriceIcon.Foreground = brush;

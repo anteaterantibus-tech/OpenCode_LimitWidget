@@ -157,6 +157,7 @@
     <sys:String x:Key="PeakFooterFormat">Пик ×2 до {0} · автообновление {1}</sys:String>
     <sys:String x:Key="PriceNormalTip">Обычная стоимость токенов, без пиковой надбавки.</sys:String>
     <sys:String x:Key="PricePeakTooltipFormat">Пик ×2 до {0}: токены сейчас стоят вдвое дороже.</sys:String>
+    <sys:String x:Key="PricePeakWindowsFormat">Пик ×2 для {0}: {1} и {2} по будням, местное время.</sys:String>
     <sys:String x:Key="LinkOkTip">Связь с opencode.ai есть, данные обновляются.</sys:String>
     <sys:String x:Key="LinkDegradedTip">Связь нестабильна, показаны последние данные.</sys:String>
     <sys:String x:Key="LinkDownTip">Нет связи с opencode.ai, показаны последние данные.</sys:String>

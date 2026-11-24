@@ -157,6 +157,7 @@
     <sys:String x:Key="PeakFooterFormat">Peak ×2 until {0} · refresh {1}</sys:String>
     <sys:String x:Key="PriceNormalTip">Regular token price, no peak surcharge.</sys:String>
     <sys:String x:Key="PricePeakTooltipFormat">Peak ×2 until {0}: tokens cost twice as much right now.</sys:String>
+    <sys:String x:Key="PricePeakWindowsFormat">Peak ×2 for {0}: {1} and {2} on weekdays, local time.</sys:String>
     <sys:String x:Key="LinkOkTip">Connected to opencode.ai, data is refreshing.</sys:String>
     <sys:String x:Key="LinkDegradedTip">Connection is unstable, showing the last data.</sys:String>
     <sys:String x:Key="LinkDownTip">No connection to opencode.ai, showing the last data.</sys:String>

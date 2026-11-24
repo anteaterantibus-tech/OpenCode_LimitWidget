@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace OpenCodeWidget.Services;
 
 public static class PeakPricing
@@ -32,6 +34,24 @@ public static class PeakPricing
         var time = utcNow.UtcDateTime.TimeOfDay;
         var end = time < MorningEnd ? date + MorningEnd : date + AfternoonEnd;
         return new DateTimeOffset(end, TimeSpan.Zero);
+    }
+
+    // Peak windows in local time, formatted for the dollar tooltip. The UTC
+    // schedule is Mon-Fri, so the local weekday may differ at the edges.
+    public static (string First, string Second) LocalWindows(DateTimeOffset utcNow, CultureInfo culture)
+    {
+        var date = utcNow.UtcDateTime.Date;
+
+        static string Format(DateTime day, TimeSpan from, TimeSpan to, CultureInfo culture)
+        {
+            var start = TimeZoneInfo.ConvertTimeFromUtc(day + from, TimeZoneInfo.Local);
+            var end = TimeZoneInfo.ConvertTimeFromUtc(day + to, TimeZoneInfo.Local);
+            return start.ToString("HH:mm", culture) + "-" + end.ToString("HH:mm", culture);
+        }
+
+        return (
+            Format(date, MorningStart, MorningEnd, culture),
+            Format(date, AfternoonStart, AfternoonEnd, culture));
     }
 
     public static double MinutesLeft(DateTimeOffset utcNow)
