@@ -230,7 +230,7 @@ There is no Go badge in the bar: the logo glows in the monthly limit colour inst
 The more of the month is spent, the warmer the glow: green, yellow, orange, red.
 The `5h`, `week` and `month` labels follow the percentages and are white, like `net` and `load`; the percentages keep the limit colour.
 A `$` badge sits at the right end: green at the regular token price, yellow during the peak ×2.
-Its tooltip lists the peak windows in local time: 08:00-11:00 and 13:00-17:00 on weekdays for UTC+7.
+Its tooltip lists the peak windows in the PC's local time. For UTC+7, for example, that is 08:00-11:00 and 13:00-17:00 on weekdays.
 A tooltip only describes the element under the cursor: each limit, the connection, the load and the dollar have their own. The plan and renewal date are in the month tooltip.
 
 On Windows 11 the bar sits in the free left area; on Windows 10 it is placed near the tray,
