@@ -228,7 +228,7 @@ Double-click the bar to return to the normal view.
 
 There is no Go badge in the bar: the logo glows in the monthly limit colour instead.
 The more of the month is spent, the warmer the glow: green, yellow, orange, red.
-The `5h`, `week`, `month`, `net` and `load` labels are white, while the percentages keep the limit colour.
+The `5h`, `week` and `month` labels follow the percentages and are white, like `net` and `load`; the percentages keep the limit colour.
 A `$` badge sits at the right end: green at the regular token price, yellow during the peak ×2.
 A tooltip only describes the element under the cursor: each limit, the connection, the load and the dollar have their own. The plan and renewal date are in the month tooltip.
 

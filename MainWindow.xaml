@@ -576,15 +576,15 @@
                     <StackPanel x:Name="TaskbarFiveHourGroup"
                                 Orientation="Horizontal"
                                 Margin="0,0,8,0">
-                        <TextBlock x:Name="TaskbarFiveHourLabel"
-                                   Text="{DynamicResource FiveHourShort}"
-                                   FontSize="8.5"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center" />
                         <TextBlock x:Name="TaskbarFiveHour"
                                    Text="-"
                                    FontSize="11"
                                    FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="TaskbarFiveHourLabel"
+                                   Text="{DynamicResource FiveHourShort}"
+                                   FontSize="8.5"
+                                   Foreground="{StaticResource TextBrush}"
                                    Margin="4,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
@@ -596,15 +596,15 @@
                     <StackPanel x:Name="TaskbarWeekGroup"
                                 Orientation="Horizontal"
                                 Margin="0,0,8,0">
-                        <TextBlock x:Name="TaskbarWeekLabel"
-                                   Text="{DynamicResource WeekShort}"
-                                   FontSize="8.5"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center" />
                         <TextBlock x:Name="TaskbarWeek"
                                    Text="-"
                                    FontSize="11"
                                    FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="TaskbarWeekLabel"
+                                   Text="{DynamicResource WeekShort}"
+                                   FontSize="8.5"
+                                   Foreground="{StaticResource TextBrush}"
                                    Margin="4,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
@@ -615,15 +615,15 @@
                             VerticalAlignment="Center" />
                     <StackPanel x:Name="TaskbarMonthGroup"
                                 Orientation="Horizontal">
-                        <TextBlock x:Name="TaskbarMonthLabel"
-                                   Text="{DynamicResource MonthShort}"
-                                   FontSize="8.5"
-                                   Foreground="{StaticResource TextBrush}"
-                                   VerticalAlignment="Center" />
                         <TextBlock x:Name="TaskbarMonth"
                                    Text="-"
                                    FontSize="11"
                                    FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <TextBlock x:Name="TaskbarMonthLabel"
+                                   Text="{DynamicResource MonthShort}"
+                                   FontSize="8.5"
+                                   Foreground="{StaticResource TextBrush}"
                                    Margin="4,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
