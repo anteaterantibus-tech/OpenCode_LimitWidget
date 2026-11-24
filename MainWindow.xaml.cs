@@ -209,13 +209,20 @@ public partial class MainWindow : Window
                 if (!_settings.TaskbarMode || _hiddenByUser || _fullscreenActive)
                     return;
 
+                var handle = new WindowInteropHelper(this).Handle;
+                if (handle == IntPtr.Zero)
+                    return;
+
+                if (_settings.HideInFullscreen && FullscreenDetector.IsFullscreenOnSameMonitor(handle))
+                    return;
+
                 _taskbarOwner = IntPtr.Zero;
 
                 if (!IsVisible)
                     Show();
 
                 PositionTaskbar();
-                TaskbarLocator.KeepOnTop(new WindowInteropHelper(this).Handle);
+                TaskbarLocator.KeepOnTop(handle);
             }), DispatcherPriority.Send);
         }
 
@@ -1415,7 +1422,10 @@ public partial class MainWindow : Window
             return;
 
         var handle = new WindowInteropHelper(this).Handle;
-        if (handle == IntPtr.Zero || FullscreenDetector.IsFullscreenOnSameMonitor(handle))
+        if (handle == IntPtr.Zero)
+            return;
+
+        if (_settings.HideInFullscreen && FullscreenDetector.IsFullscreenOnSameMonitor(handle))
             return;
 
         var taskbar = TaskbarLocator.GetPrimaryTaskbar();
@@ -1438,6 +1448,9 @@ public partial class MainWindow : Window
 
         var handle = new WindowInteropHelper(this).Handle;
         if (handle == IntPtr.Zero)
+            return;
+
+        if (_settings.HideInFullscreen && FullscreenDetector.IsFullscreenOnSameMonitor(handle))
             return;
 
         if (!IsVisible)
