@@ -85,9 +85,11 @@ public partial class MainWindow : Window
     private bool _settingsOpen;
     private bool _fullscreenActive;
     private bool _autoHidden;
+    private bool _hiddenByUser;
     private double? _lastNormalLeft;
     private double? _lastNormalTop;
     private IntPtr _taskbarOwner = IntPtr.Zero;
+    private uint _taskbarCreatedMessage;
     private bool _limitStateInitialized;
     private readonly Dictionary<string, LimitState> _limitState = new(StringComparer.Ordinal);
     private LimitToastWindow? _limitToast;
@@ -126,8 +128,11 @@ public partial class MainWindow : Window
         _taskbarTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _taskbarTimer.Tick += (_, _) =>
         {
-            if (_settings.TaskbarMode)
-                PositionTaskbar();
+            if (!_settings.TaskbarMode)
+                return;
+
+            PositionTaskbar();
+            EnsureTaskbarBarVisible();
         };
 
         _foregroundWatcher = new ForegroundWatcher();
@@ -180,6 +185,41 @@ public partial class MainWindow : Window
         }
 
         await RefreshAsync();
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+
+        _taskbarCreatedMessage = TaskbarLocator.RegisterWindowMessage("TaskbarCreated");
+
+        if (PresentationSource.FromVisual(this) is HwndSource source)
+        {
+            source.AddHook(WndProc);
+            Closed += (_, _) => source.RemoveHook(WndProc);
+        }
+    }
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (_taskbarCreatedMessage != 0 && (uint)msg == _taskbarCreatedMessage)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (!_settings.TaskbarMode || _hiddenByUser || _fullscreenActive)
+                    return;
+
+                _taskbarOwner = IntPtr.Zero;
+
+                if (!IsVisible)
+                    Show();
+
+                PositionTaskbar();
+                TaskbarLocator.KeepOnTop(new WindowInteropHelper(this).Handle);
+            }), DispatcherPriority.Send);
+        }
+
+        return IntPtr.Zero;
     }
 
     private TimeSpan NormalRefreshInterval =>
@@ -1136,6 +1176,7 @@ public partial class MainWindow : Window
     public void ShowFromTray()
     {
         _autoHidden = false;
+        _hiddenByUser = false;
 
         if (!IsVisible)
             Show();
@@ -1268,6 +1309,7 @@ public partial class MainWindow : Window
             SizeToContent = SizeToContent.Width;
             Width = double.NaN;
             Height = TaskbarBarHeight;
+            _hiddenByUser = false;
             _taskbarOwner = IntPtr.Zero;
             _taskbarTimer.Start();
             PositionTaskbar();
@@ -1387,6 +1429,43 @@ public partial class MainWindow : Window
         }
 
         TaskbarLocator.KeepOnTop(handle);
+    }
+
+    private void EnsureTaskbarBarVisible()
+    {
+        if (!_settings.TaskbarMode || _fullscreenActive || _hiddenByUser)
+            return;
+
+        var handle = new WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero)
+            return;
+
+        if (!IsVisible)
+        {
+            Show();
+            PositionTaskbar();
+            TaskbarLocator.KeepOnTop(handle);
+            return;
+        }
+
+        if (ActualWidth < 1 || ActualHeight < 1)
+            return;
+
+        var center = new Point(Left + ActualWidth / 2, Top + ActualHeight / 2);
+        if (PresentationSource.FromVisual(this)?.CompositionTarget is { } target)
+            center = target.TransformToDevice.Transform(center);
+
+        var hit = TaskbarLocator.WindowFromPoint(new TaskbarLocator.POINT
+        {
+            X = (int)Math.Round(center.X),
+            Y = (int)Math.Round(center.Y),
+        });
+
+        if (hit == IntPtr.Zero)
+            return;
+
+        if (TaskbarLocator.GetAncestor(hit, TaskbarLocator.GaRoot) != handle)
+            TaskbarLocator.KeepOnTop(handle);
     }
 
     private void SetTaskbarBounds(double left, double top, double height, double maxWidth)
@@ -1519,6 +1598,7 @@ public partial class MainWindow : Window
         }
 
         _autoHidden = false;
+        _hiddenByUser = true;
         e.Cancel = true;
         SaveWindowPosition();
         Hide();
@@ -1567,6 +1647,7 @@ public partial class MainWindow : Window
     private void Hide_Click(object sender, RoutedEventArgs e)
     {
         _autoHidden = false;
+        _hiddenByUser = true;
         SaveWindowPosition();
         Hide();
     }

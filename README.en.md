@@ -79,6 +79,8 @@ The status page is requested without a key and only reads public data.
 
 If the network is unavailable, the widget retries after 10 seconds to recover quickly
 after sleep or reconnection. On HTTP 429 the delay grows to one minute.
+Requests go directly; the Windows system proxy is not used, because a local proxy
+can stall updates.
 The widget does not use Google sign-in: an API key is enough.
 
 ## Requirements

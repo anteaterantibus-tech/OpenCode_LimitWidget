@@ -17,6 +17,7 @@ internal static class HttpClientFactory
         {
             AutomaticDecompression = DecompressionMethods.All,
             PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+            UseProxy = false,
             ConnectCallback = ConnectPreferIpv4Async,
         };
 
