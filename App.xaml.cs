@@ -38,6 +38,11 @@ public partial class App : Application
         _settings = _store.Load();
         Loc.Apply(_settings.Language, notify: false);
 
+        // Keep the autostart command pointing at this executable, even if the
+        // app was moved or replaced by a new build.
+        if (_settings.StartWithWindows)
+            StartupManager.SetEnabled(true);
+
         if (string.IsNullOrWhiteSpace(_store.GetApiKey(_settings)))
         {
             try
