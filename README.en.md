@@ -60,6 +60,7 @@ Ready-to-run build: [latest release](https://github.com/anteaterantibus-tech/Ope
 - A data freshness indicator and an error banner when the key or network is unavailable.
 - Compact mode: the same limits as three short bars, without extra details.
 - Taskbar mode: a thin limit bar in the free part of the Windows taskbar.
+- The logo glow in the taskbar bar follows the monthly limit colour: green while there is room left, red once it is spent.
 - Auto-hide when a game or movie is fullscreen.
 - Notifications at 70%, 90% and 100% of a limit: a card below the widget, sound and frame glow.
 - OpenCode load indicator: shows when the Go service is degraded due to latency or provider issues.
@@ -223,6 +224,10 @@ Switch it from the widget's right-click menu or the tray menu.
 Double-click the bar to return to the normal view.
 
 ![Taskbar bar demo](docs/taskbar-demo.gif)
+
+There is no Go badge in the bar: the logo glows in the monthly limit colour instead.
+The more of the month is spent, the warmer the glow: green, yellow, orange, red.
+The plan and renewal date are still available in the tooltip when you hover the bar.
 
 On Windows 11 the bar sits in the free left area; on Windows 10 it is placed near the tray,
 to the left of the notification area, because Windows 10 keeps app icons on the left.

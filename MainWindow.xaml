@@ -522,41 +522,36 @@
             <Grid Margin="10,4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{StaticResource LogoButton}"
+                <Button x:Name="TaskbarLogoButton"
+                        Style="{StaticResource LogoButton}"
                         Width="18"
                         Height="18"
                         VerticalAlignment="Center"
                         ToolTip="{DynamicResource TipOpenStats}"
                         AutomationProperties.Name="{DynamicResource TipOpenStats}"
                         Click="ConsoleLink_Click">
-                    <Image Source="assets/logo.png"
+                    <Image x:Name="TaskbarLogoImage"
+                           Source="assets/logo.png"
                            Width="18"
                            Height="18"
                            Stretch="Uniform"
-                           RenderOptions.BitmapScalingMode="HighQuality" />
+                           RenderOptions.BitmapScalingMode="HighQuality">
+                        <Image.Effect>
+                            <DropShadowEffect ShadowDepth="0"
+                                              BlurRadius="11"
+                                              Opacity="0.95"
+                                              Color="#56D278" />
+                        </Image.Effect>
+                    </Image>
                 </Button>
 
-                <Border Grid.Column="1"
-                        Margin="6,0,0,0"
-                        CornerRadius="4"
-                        Background="{StaticResource AccentSoftBrush}"
-                        Padding="4,1"
-                        VerticalAlignment="Center">
-                    <TextBlock x:Name="TaskbarPlanBadge"
-                               Text="Go"
-                               FontSize="8"
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource AccentBrush}" />
-                </Border>
-
-                <StackPanel Grid.Column="2"
+                <StackPanel Grid.Column="1"
                             Orientation="Horizontal"
-                            Margin="10,0,0,0"
+                            Margin="9,0,0,0"
                             VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <TextBlock Text="{DynamicResource FiveHourShort}"
@@ -606,7 +601,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel Grid.Column="3"
+                <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             Margin="10,0,2,0"
                             VerticalAlignment="Center">

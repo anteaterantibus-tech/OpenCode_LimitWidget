@@ -91,6 +91,7 @@ public partial class MainWindow : Window
     private string? _lastPeakToastWindow;
     private string? _peakSummary;
     private string? _forecastSummary;
+    private string? _taskbarPlanTooltip;
     private double? _lastNormalLeft;
     private double? _lastNormalTop;
     private IntPtr _taskbarOwner = IntPtr.Zero;
@@ -408,7 +409,6 @@ public partial class MainWindow : Window
             var plan = PlanName(status.Product);
             PlanBadge.Text = plan;
             CompactPlanBadge.Text = plan;
-            TaskbarPlanBadge.Text = plan;
 
             UpdateTaskbarMeters(meters);
 
@@ -429,7 +429,7 @@ public partial class MainWindow : Window
 
             PlanBadgeHost.ToolTip = planTooltip;
             CompactPlanBadgeHost.ToolTip = planTooltip;
-            TaskbarPlanBadge.ToolTip = planTooltip;
+            _taskbarPlanTooltip = planTooltip;
 
             if (!cached)
                 HideBanner();
@@ -439,10 +439,9 @@ public partial class MainWindow : Window
             var plan = PlanName(status?.Product);
             PlanBadge.Text = plan;
             CompactPlanBadge.Text = plan;
-            TaskbarPlanBadge.Text = plan;
             PlanBadgeHost.ToolTip = null;
             CompactPlanBadgeHost.ToolTip = null;
-            TaskbarPlanBadge.ToolTip = null;
+            _taskbarPlanTooltip = null;
 
             UpdateTaskbarMeters(null);
             ShowEmptyState(Loc.Get("NoData"));
@@ -673,6 +672,8 @@ public partial class MainWindow : Window
 
     private void UpdateTaskbarMeters(GoMeters? meters)
     {
+        UpdateTaskbarLogoGlow(meters?.Month?.Percent);
+
         if (meters is null)
         {
             TaskbarFiveHour.Text = "-";
@@ -686,6 +687,8 @@ public partial class MainWindow : Window
                 ? "OpenCode Go"
                 : "OpenCode Go\n" + _loadSummary;
 
+            if (!string.IsNullOrEmpty(_taskbarPlanTooltip))
+                emptyTip += "\n" + _taskbarPlanTooltip;
             if (!string.IsNullOrEmpty(_peakSummary))
                 emptyTip += "\n" + _peakSummary;
             if (!string.IsNullOrEmpty(_forecastSummary))
@@ -712,6 +715,8 @@ public partial class MainWindow : Window
             TaskbarMonth.Text,
             FormatMeterUsd(meters.Month));
 
+        if (!string.IsNullOrEmpty(_taskbarPlanTooltip))
+            tooltip = _taskbarPlanTooltip + "\n" + tooltip;
         if (!string.IsNullOrEmpty(_loadSummary))
             tooltip += "\n" + _loadSummary;
         if (!string.IsNullOrEmpty(_peakSummary))
@@ -720,6 +725,24 @@ public partial class MainWindow : Window
             tooltip += "\n" + _forecastSummary;
 
         TaskbarCard.ToolTip = tooltip;
+    }
+
+    // The logo glow mirrors the month spend: green while the subscription has
+    // room left, shifting to red as the monthly limit runs out.
+    private void UpdateTaskbarLogoGlow(double? monthPercent)
+    {
+        if (TaskbarLogoImage.Effect is not DropShadowEffect glow)
+            return;
+
+        if (monthPercent is { } value)
+        {
+            glow.Color = LimitPalette.ColorFor(value);
+            glow.Opacity = 0.95;
+            return;
+        }
+
+        glow.Color = Color.FromRgb(0x7A, 0x7A, 0x7A);
+        glow.Opacity = 0.35;
     }
 
     private void SetTaskbarMeterColor(TextBlock text, double? percent)
