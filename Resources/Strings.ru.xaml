@@ -151,6 +151,17 @@
     <sys:String x:Key="SoundTone">Тон</sys:String>
     <sys:String x:Key="Glow">Подсветка рамки</sys:String>
     <sys:String x:Key="Thresholds">Пороги: 70%, 90% и 100%.</sys:String>
+    <sys:String x:Key="PeakWarnings">Предупреждать о пиковых тарифах</sys:String>
+    <sys:String x:Key="PeakWarningsHelp">DeepSeek V4.1 Flash: пик 01:00-04:00 и 06:00-10:00 UTC по будням. Окончание показывается по местному времени.</sys:String>
+    <sys:String x:Key="PeakToastFormat">Пик ×2 до {0}</sys:String>
+    <sys:String x:Key="PeakFooterFormat">Пик ×2 до {0} · автообновление {1}</sys:String>
+    <sys:String x:Key="MonthForecastLasts">Месяц: хватит до {0}</sys:String>
+    <sys:String x:Key="MonthForecastTight">Месяц: впритык к {0}</sys:String>
+    <sys:String x:Key="MonthForecastEnds">Месяц: закончится ~{0}</sys:String>
+    <sys:String x:Key="MonthExhausted">Месяц: лимит исчерпан</sys:String>
+    <sys:String x:Key="MonthForecastNoData">Месяц: мало данных для прогноза</sys:String>
+    <sys:String x:Key="MonthForecastTooltipFormat">При текущем среднем темпе ({0}/день) лимит закончится {1}. Продление {2}.</sys:String>
+    <sys:String x:Key="MonthForecastLastsTooltipFormat">При текущем среднем темпе ({0}/день) лимита хватит до продления {1}.</sys:String>
     <sys:String x:Key="TestNotification">Тест уведомления</sys:String>
     <sys:String x:Key="Check">Проверить</sys:String>
     <sys:String x:Key="Cancel">Отмена</sys:String>

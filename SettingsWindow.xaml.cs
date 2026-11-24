@@ -49,6 +49,7 @@ public partial class SettingsWindow : Window
         SoundToggle.IsChecked = settings.NotifySound;
         SoundToggle.IsEnabled = settings.NotifyOnLimits;
         AnimateToggle.IsChecked = settings.AnimateOnLimit;
+        PeakToggle.IsChecked = settings.PeakWarnings;
         SelectSound(settings.NotifySoundId);
 
         NotifyToggle.Checked += (_, _) => SoundToggle.IsEnabled = true;
@@ -278,6 +279,7 @@ public partial class SettingsWindow : Window
             _settings.NotifySound = SoundToggle.IsChecked == true;
             _settings.NotifySoundId = SelectedSoundId();
             _settings.AnimateOnLimit = AnimateToggle.IsChecked == true;
+            _settings.PeakWarnings = PeakToggle.IsChecked == true;
             _settings.Language = Loc.Language;
 
             _store.Save(_settings);

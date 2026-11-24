@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
@@ -86,6 +86,11 @@ public partial class MainWindow : Window
     private bool _fullscreenActive;
     private bool _autoHidden;
     private bool _hiddenByUser;
+    private long? _lastFiveHourUsed;
+    private DateTimeOffset? _lastWorkAt;
+    private string? _lastPeakToastWindow;
+    private string? _peakSummary;
+    private string? _forecastSummary;
     private double? _lastNormalLeft;
     private double? _lastNormalTop;
     private IntPtr _taskbarOwner = IntPtr.Zero;
@@ -270,6 +275,7 @@ public partial class MainWindow : Window
 
         _lastSnapshot = cached;
         _policy.SeedFromCache(cached.FetchedAt);
+        _lastFiveHourUsed = cached.Status?.Access?.Meters?.FiveHour?.UsedMicroCents;
         ApplySnapshot(cached, cached: true);
     }
 
@@ -316,6 +322,12 @@ public partial class MainWindow : Window
                 Activity = activity,
                 FetchedAt = DateTimeOffset.Now,
             };
+
+            var fiveHourUsed = status.Access?.Meters?.FiveHour?.UsedMicroCents;
+            if (fiveHourUsed is { } current && _lastFiveHourUsed is { } previous && current > previous)
+                _lastWorkAt = DateTimeOffset.UtcNow;
+
+            _lastFiveHourUsed = fiveHourUsed;
 
             _lastSnapshot = snapshot;
             _store.SaveSnapshot(snapshot);
@@ -450,6 +462,149 @@ public partial class MainWindow : Window
         FooterText.Text = cached
             ? Loc.Get("CachedRefreshing")
             : Loc.Format("AutoRefreshFormat", FormatInterval(_settings.RefreshSeconds));
+
+        UpdateForecast(snapshot);
+        UpdatePeakState();
+        UpdateTaskbarMeters(status?.Access?.Meters);
+    }
+
+    private void UpdateForecast(GoSnapshot snapshot)
+    {
+        _forecastSummary = null;
+
+        var access = snapshot.Status?.Access;
+        var month = access?.Meters?.Month;
+
+        if (access is null || month is null || month.LimitMicroCents <= 0)
+        {
+            UsageForecastText.Text = "";
+            UsageForecastText.ToolTip = null;
+            return;
+        }
+
+        var now = DateTimeOffset.Now;
+        var resetLocal = access.EndsAt.ToLocalTime().ToString("d MMM", Ru);
+        var used = month.UsedUsd;
+        var limit = month.LimitUsd;
+        var remaining = limit - used;
+
+        if (remaining <= 0)
+        {
+            UsageForecastText.Text = Loc.Get("MonthExhausted");
+            UsageForecastText.Foreground = (Brush)FindResource("DangerBrush");
+            UsageForecastText.ToolTip = null;
+            _forecastSummary = UsageForecastText.Text;
+            return;
+        }
+
+        var elapsed = (now - access.StartsAt).TotalDays;
+        if (elapsed < 0.2 || used <= 0)
+        {
+            UsageForecastText.Text = Loc.Get("MonthForecastNoData");
+            UsageForecastText.Foreground = (Brush)FindResource("FaintBrush");
+            UsageForecastText.ToolTip = null;
+            return;
+        }
+
+        var perDay = used / (decimal)elapsed;
+        var daysLeft = remaining / perDay;
+        var estimate = now.AddDays((double)daysLeft);
+        var estimateLocal = estimate.ToLocalTime().ToString("d MMM", Ru);
+
+        string text;
+        Brush brush;
+        string tooltip;
+
+        if (estimate >= access.EndsAt)
+        {
+            text = Loc.Format("MonthForecastLasts", resetLocal);
+            brush = (Brush)FindResource("MutedBrush");
+            tooltip = Loc.Format("MonthForecastLastsTooltipFormat", FormatUsd(perDay), resetLocal);
+        }
+        else if ((access.EndsAt - estimate).TotalDays <= 2)
+        {
+            text = Loc.Format("MonthForecastTight", resetLocal);
+            brush = (Brush)FindResource("WarningBrush");
+            tooltip = Loc.Format("MonthForecastTooltipFormat", FormatUsd(perDay), estimateLocal, resetLocal);
+        }
+        else
+        {
+            text = Loc.Format("MonthForecastEnds", estimateLocal);
+            brush = (Brush)FindResource("DangerBrush");
+            tooltip = Loc.Format("MonthForecastTooltipFormat", FormatUsd(perDay), estimateLocal, resetLocal);
+        }
+
+        UsageForecastText.Text = text;
+        UsageForecastText.Foreground = brush;
+        UsageForecastText.ToolTip = tooltip;
+        _forecastSummary = text;
+    }
+
+    private void UpdatePeakState()
+    {
+        _peakSummary = null;
+
+        if (!_settings.PeakWarnings || !PeakPricing.AppliesTo(_focusModel))
+            return;
+
+        var now = DateTimeOffset.UtcNow;
+        if (!PeakPricing.IsPeak(now))
+            return;
+
+        if (_lastWorkAt is not { } work || now - work > TimeSpan.FromMinutes(10))
+            return;
+
+        if (!IsOpenCodeRunning())
+            return;
+
+        var endLocal = PeakPricing.CurrentPeakEnd(now)?.ToLocalTime().ToString("HH:mm", Ru);
+        if (string.IsNullOrEmpty(endLocal))
+            return;
+
+        _peakSummary = Loc.Format("PeakFooterFormat", endLocal, FormatInterval(_settings.RefreshSeconds));
+
+        if (_policy.State == LinkState.Ok)
+            FooterText.Text = _peakSummary;
+
+        var window = PeakPricing.CurrentPeakWindowKey(now);
+        if (_lastPeakToastWindow == window || PeakPricing.MinutesLeft(now) <= 10)
+            return;
+
+        if (ShowPeakToast(endLocal))
+            _lastPeakToastWindow = window;
+    }
+
+    private bool ShowPeakToast(string endLocal)
+    {
+        if (_fullscreenActive || _limitToast is { IsVisible: true })
+            return false;
+
+        _limitToast ??= new LimitToastWindow();
+
+        var mainRect = IsVisible && ActualWidth > 1
+            ? new Rect(Left, Top, ActualWidth, ActualHeight)
+            : Rect.Empty;
+
+        var fallbackWidth = _settings.CompactMode ? CompactWindowWidth : NormalWindowWidth;
+        _limitToast.ShowMessage(Loc.Format("PeakToastFormat", endLocal), 70, mainRect, fallbackWidth);
+        return true;
+    }
+
+    private static bool IsOpenCodeRunning()
+    {
+        foreach (var name in new[] { "OpenCode", "opencode" })
+        {
+            var processes = Process.GetProcessesByName(name);
+            if (processes.Length == 0)
+                continue;
+
+            foreach (var process in processes)
+                process.Dispose();
+
+            return true;
+        }
+
+        return false;
     }
 
     private static void ApplyMeter(RingMeter ring, GoMeter? meter, string title)
@@ -526,9 +681,17 @@ public partial class MainWindow : Window
             TaskbarFiveHour.Foreground = (Brush)FindResource("TextBrush");
             TaskbarWeek.Foreground = (Brush)FindResource("TextBrush");
             TaskbarMonth.Foreground = (Brush)FindResource("TextBrush");
-            TaskbarCard.ToolTip = string.IsNullOrEmpty(_loadSummary)
+
+            var emptyTip = string.IsNullOrEmpty(_loadSummary)
                 ? "OpenCode Go"
                 : "OpenCode Go\n" + _loadSummary;
+
+            if (!string.IsNullOrEmpty(_peakSummary))
+                emptyTip += "\n" + _peakSummary;
+            if (!string.IsNullOrEmpty(_forecastSummary))
+                emptyTip += "\n" + _forecastSummary;
+
+            TaskbarCard.ToolTip = emptyTip;
             return;
         }
 
@@ -551,6 +714,10 @@ public partial class MainWindow : Window
 
         if (!string.IsNullOrEmpty(_loadSummary))
             tooltip += "\n" + _loadSummary;
+        if (!string.IsNullOrEmpty(_peakSummary))
+            tooltip += "\n" + _peakSummary;
+        if (!string.IsNullOrEmpty(_forecastSummary))
+            tooltip += "\n" + _forecastSummary;
 
         TaskbarCard.ToolTip = tooltip;
     }
@@ -860,6 +1027,10 @@ public partial class MainWindow : Window
         TaskbarWeek.Text = "-";
         TaskbarMonth.Text = "-";
         TaskbarCard.ToolTip = message;
+        UsageForecastText.Text = "";
+        UsageForecastText.ToolTip = null;
+        _forecastSummary = null;
+        _peakSummary = null;
         StopAlertGlow();
     }
 
@@ -1228,6 +1399,11 @@ public partial class MainWindow : Window
         _limitStateInitialized = false;
         HideBanner();
         _policy.Reset();
+        _lastFiveHourUsed = null;
+        _lastWorkAt = null;
+        _lastPeakToastWindow = null;
+        _peakSummary = null;
+        _forecastSummary = null;
         ApplyLinkState(LinkState.Down);
 
         _refreshCts?.Cancel();

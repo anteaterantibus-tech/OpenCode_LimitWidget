@@ -151,6 +151,17 @@
     <sys:String x:Key="SoundTone">Tone</sys:String>
     <sys:String x:Key="Glow">Frame glow</sys:String>
     <sys:String x:Key="Thresholds">Thresholds: 70%, 90% and 100%.</sys:String>
+    <sys:String x:Key="PeakWarnings">Warn about peak pricing</sys:String>
+    <sys:String x:Key="PeakWarningsHelp">DeepSeek V4.1 Flash: peak 01:00-04:00 and 06:00-10:00 UTC on weekdays. The end is shown in local time.</sys:String>
+    <sys:String x:Key="PeakToastFormat">Peak ×2 until {0}</sys:String>
+    <sys:String x:Key="PeakFooterFormat">Peak ×2 until {0} · refresh {1}</sys:String>
+    <sys:String x:Key="MonthForecastLasts">Month: lasts until {0}</sys:String>
+    <sys:String x:Key="MonthForecastTight">Month: tight until {0}</sys:String>
+    <sys:String x:Key="MonthForecastEnds">Month: runs out ~{0}</sys:String>
+    <sys:String x:Key="MonthExhausted">Month: limit reached</sys:String>
+    <sys:String x:Key="MonthForecastNoData">Month: not enough data for a forecast</sys:String>
+    <sys:String x:Key="MonthForecastTooltipFormat">At the current average pace ({0}/day) the limit runs out {1}. Renewal {2}.</sys:String>
+    <sys:String x:Key="MonthForecastLastsTooltipFormat">At the current average pace ({0}/day) the limit lasts until renewal {1}.</sys:String>
     <sys:String x:Key="TestNotification">Test notification</sys:String>
     <sys:String x:Key="Check">Check</sys:String>
     <sys:String x:Key="Cancel">Cancel</sys:String>

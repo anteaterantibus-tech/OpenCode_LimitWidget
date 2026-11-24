@@ -59,6 +59,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
@@ -309,8 +310,17 @@
                     </Grid>
                 </Grid>
 
+                <!-- Usage forecast -->
+                <TextBlock x:Name="UsageForecastText"
+                           Grid.Row="6"
+                           Text=""
+                           FontSize="9"
+                           Foreground="{StaticResource MutedBrush}"
+                           Margin="0,10,0,0"
+                           TextTrimming="CharacterEllipsis" />
+
                 <!-- Footer -->
-                <Grid Grid.Row="6" Margin="0,12,0,0">
+                <Grid Grid.Row="7" Margin="0,10,0,0">
                     <TextBlock x:Name="FooterText"
                                Text=""
                                FontSize="9"

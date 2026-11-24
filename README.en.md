@@ -64,6 +64,7 @@ Ready-to-run build: [latest release](https://github.com/anteaterantibus-tech/Ope
 - Notifications at 70%, 90% and 100% of a limit: a card below the widget, sound and frame glow.
 - OpenCode load indicator: shows when the Go service is degraded due to latency or provider issues.
 - Forecast window: click the indicator to see which hours are more likely to have load.
+- Peak pricing warning for DeepSeek and a monthly usage forecast.
 
 ## How it works
 
@@ -165,6 +166,19 @@ A short network drop does not turn the widget into a red error:
 
 Key errors, 429 and server failures are shown immediately, without the soft mode.
 
+## Peak pricing and forecast
+
+DeepSeek V4.1 Flash and V4 Pro have peak hours: 01:00-04:00 and 06:00-10:00 UTC on weekdays;
+all other hours and weekends are cheaper. During peak, tokens cost twice as much; the widget
+shows the peak end in local time.
+
+With "Warn about peak pricing" enabled, the widget checks that OpenCode is running, Go usage
+is growing, and it is currently peak. It then shows a "Peak ×2 until HH:mm" card and writes it
+to the footer. It repeats at most once per peak window.
+
+Under the limits there is a monthly forecast: "Month: tight until 5 Dec" or "Month: runs out ~4 Dec".
+It is based on the average pace since the period start, so it is an estimate, not a guarantee.
+
 ## OpenCode load
 
 The widget reads the public `status.opencode.ai` page on every refresh cycle
@@ -229,6 +243,8 @@ the bar may overlap taskbar elements or stay at the edge. In those cases use the
 - Limit notifications.
 - Sound and its variant: Soft, Bell, Wood, Drop, Tone. Preview and Test notification buttons.
 - Frame glow at 70%, 90% and 100%.
+- Peak pricing warnings for DeepSeek.
+- Monthly usage forecast under the limits.
 - UI language: Russian or English. Applied immediately, without a restart.
 
 Autostart is written to `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
@@ -273,6 +289,7 @@ Resources/Strings.*.xaml   Russian and English UI strings
 Services/GoApiClient.cs    console HTTP client
 Services/StatusApiClient.cs OpenCode status client
 Services/LoadForecast.cs   hourly load profile
+Services/PeakPricing.cs    DeepSeek peak hours
 Services/Loc.cs            localization runtime
 Services/HttpClientFactory.cs shared HTTP client with IPv4 preference
 Services/SettingsStore.cs  settings and DPAPI encryption
