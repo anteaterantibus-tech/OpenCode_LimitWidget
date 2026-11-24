@@ -155,6 +155,11 @@
     <sys:String x:Key="PeakWarningsHelp">DeepSeek V4.1 Flash: peak 01:00-04:00 and 06:00-10:00 UTC on weekdays. The end is shown in local time.</sys:String>
     <sys:String x:Key="PeakToastFormat">Peak ×2 until {0}</sys:String>
     <sys:String x:Key="PeakFooterFormat">Peak ×2 until {0} · refresh {1}</sys:String>
+    <sys:String x:Key="PriceNormalTip">Regular token price, no peak surcharge.</sys:String>
+    <sys:String x:Key="PricePeakTooltipFormat">Peak ×2 until {0}: tokens cost twice as much right now.</sys:String>
+    <sys:String x:Key="LinkOkTip">Connected to opencode.ai, data is refreshing.</sys:String>
+    <sys:String x:Key="LinkDegradedTip">Connection is unstable, showing the last data.</sys:String>
+    <sys:String x:Key="LinkDownTip">No connection to opencode.ai, showing the last data.</sys:String>
     <sys:String x:Key="MonthForecastLasts">Month: lasts until {0}</sys:String>
     <sys:String x:Key="MonthForecastTight">Month: tight until {0}</sys:String>
     <sys:String x:Key="MonthForecastEnds">Month: runs out ~{0}</sys:String>

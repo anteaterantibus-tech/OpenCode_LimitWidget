@@ -71,7 +71,6 @@ public partial class MainWindow : Window
     private readonly RefreshPolicy _policy = new();
     private CancellationTokenSource? _refreshCts;
     private GoSnapshot? _lastSnapshot;
-    private string? _loadSummary;
     private ServiceStatusResponse? _lastServiceStatus;
     private LoadForecast? _lastForecast;
     private LoadForecast? _modelForecast;
@@ -464,7 +463,26 @@ public partial class MainWindow : Window
 
         UpdateForecast(snapshot);
         UpdatePeakState();
+        UpdatePriceIndicators();
         UpdateTaskbarMeters(status?.Access?.Meters);
+    }
+
+    private void UpdatePriceIndicators()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var peak = PeakPricing.AppliesTo(_focusModel) && PeakPricing.IsPeak(now);
+
+        var brush = (Brush)FindResource(peak ? "WarningBrush" : "SuccessBrush");
+        var tooltip = peak && PeakPricing.CurrentPeakEnd(now) is { } end
+            ? Loc.Format("PricePeakTooltipFormat", end.ToLocalTime().ToString("HH:mm", Ru))
+            : Loc.Get("PriceNormalTip");
+
+        PriceIcon.Foreground = brush;
+        PriceIcon.ToolTip = tooltip;
+        CompactPriceIcon.Foreground = brush;
+        CompactPriceIcon.ToolTip = tooltip;
+        TaskbarPriceIcon.Foreground = brush;
+        TaskbarPriceIcon.ToolTip = tooltip;
     }
 
     private void UpdateForecast(GoSnapshot snapshot)
@@ -674,6 +692,24 @@ public partial class MainWindow : Window
     {
         UpdateTaskbarLogoGlow(meters?.Month?.Percent);
 
+        var fiveHourTip = TaskbarMeterTooltip(meters?.FiveHour, Loc.Get("FiveHours"));
+        TaskbarFiveHourGroup.ToolTip = fiveHourTip;
+        TaskbarFiveHourLabel.ToolTip = fiveHourTip;
+        TaskbarFiveHour.ToolTip = fiveHourTip;
+
+        var weekTip = TaskbarMeterTooltip(meters?.Week, Loc.Get("Week"));
+        TaskbarWeekGroup.ToolTip = weekTip;
+        TaskbarWeekLabel.ToolTip = weekTip;
+        TaskbarWeek.ToolTip = weekTip;
+
+        var monthTip = AppendLine(
+            _taskbarPlanTooltip,
+            TaskbarMeterTooltip(meters?.Month, Loc.Get("Month")));
+        monthTip = AppendLine(monthTip, _forecastSummary);
+        TaskbarMonthGroup.ToolTip = monthTip;
+        TaskbarMonthLabel.ToolTip = monthTip;
+        TaskbarMonth.ToolTip = monthTip;
+
         if (meters is null)
         {
             TaskbarFiveHour.Text = "-";
@@ -682,19 +718,6 @@ public partial class MainWindow : Window
             TaskbarFiveHour.Foreground = (Brush)FindResource("TextBrush");
             TaskbarWeek.Foreground = (Brush)FindResource("TextBrush");
             TaskbarMonth.Foreground = (Brush)FindResource("TextBrush");
-
-            var emptyTip = string.IsNullOrEmpty(_loadSummary)
-                ? "OpenCode Go"
-                : "OpenCode Go\n" + _loadSummary;
-
-            if (!string.IsNullOrEmpty(_taskbarPlanTooltip))
-                emptyTip += "\n" + _taskbarPlanTooltip;
-            if (!string.IsNullOrEmpty(_peakSummary))
-                emptyTip += "\n" + _peakSummary;
-            if (!string.IsNullOrEmpty(_forecastSummary))
-                emptyTip += "\n" + _forecastSummary;
-
-            TaskbarCard.ToolTip = emptyTip;
             return;
         }
 
@@ -705,26 +728,38 @@ public partial class MainWindow : Window
         SetTaskbarMeterColor(TaskbarFiveHour, meters.FiveHour?.Percent);
         SetTaskbarMeterColor(TaskbarWeek, meters.Week?.Percent);
         SetTaskbarMeterColor(TaskbarMonth, meters.Month?.Percent);
+    }
 
-        var tooltip = Loc.Format(
-            "TaskbarTooltipFormat",
-            TaskbarFiveHour.Text,
-            FormatMeterUsd(meters.FiveHour),
-            TaskbarWeek.Text,
-            FormatMeterUsd(meters.Week),
-            TaskbarMonth.Text,
-            FormatMeterUsd(meters.Month));
+    private static string? TaskbarMeterTooltip(GoMeter? data, string title)
+    {
+        if (data is null || data.LimitMicroCents <= 0)
+            return null;
 
-        if (!string.IsNullOrEmpty(_taskbarPlanTooltip))
-            tooltip = _taskbarPlanTooltip + "\n" + tooltip;
-        if (!string.IsNullOrEmpty(_loadSummary))
-            tooltip += "\n" + _loadSummary;
-        if (!string.IsNullOrEmpty(_peakSummary))
-            tooltip += "\n" + _peakSummary;
-        if (!string.IsNullOrEmpty(_forecastSummary))
-            tooltip += "\n" + _forecastSummary;
+        if (data.ResetsAt is not { } resetsAt)
+        {
+            return Loc.Format(
+                "MeterIdleTooltipFormat",
+                title,
+                FormatUsd(data.UsedUsd),
+                FormatUsd(data.LimitUsd));
+        }
 
-        TaskbarCard.ToolTip = tooltip;
+        var resetAt = resetsAt.ToLocalTime().ToString("d MMM, HH:mm", Ru);
+        return Loc.Format(
+            "MeterTooltipFormat",
+            title,
+            FormatUsd(data.UsedUsd),
+            FormatUsd(data.LimitUsd),
+            resetAt,
+            FormatCompactCountdown(resetsAt));
+    }
+
+    private static string? AppendLine(string? text, string? line)
+    {
+        if (string.IsNullOrEmpty(line))
+            return text;
+
+        return string.IsNullOrEmpty(text) ? line : text + "\n" + line;
     }
 
     // The logo glow mirrors the month spend: green while the subscription has
@@ -784,14 +819,10 @@ public partial class MainWindow : Window
 
         if (level == LoadLevel.Ok)
         {
-            _loadSummary = Loc.Get("LoadInNorm");
             var okTooltip = Loc.Get("LoadInNormTooltip");
 
             if (forecast is not null)
-            {
-                _loadSummary += "\n" + forecast;
                 okTooltip += "\n" + forecast;
-            }
 
             ApplyLoadState(LoadLevel.Ok, okTooltip);
             return;
@@ -822,15 +853,6 @@ public partial class MainWindow : Window
             lines.Add(Loc.Get("LoadStale"));
 
         lines.Add(Loc.Format("UpdatedFormat", DateTimeOffset.Now.ToString("HH:mm", Ru)));
-
-        _loadSummary = level == LoadLevel.Outage
-            ? Loc.Get("LoadOutageShort")
-            : Loc.Format(
-                "LoadDegradedShort",
-                reason.Length > 0 ? reason : Loc.Get("LoadRaised"));
-
-        if (forecast is not null)
-            _loadSummary += "\n" + Loc.Format("LoadForecastFormat", forecast);
 
         ApplyLoadState(level, string.Join("\n", lines));
     }
@@ -865,7 +887,7 @@ public partial class MainWindow : Window
         LoadChipIcon.Foreground = brush;
         CompactLoadIcon.Foreground = brush;
         TaskbarLoadIcon.Foreground = brush;
-        TaskbarLoadLabel.Foreground = brush;
+        TaskbarLoadLabel.Foreground = (Brush)FindResource("TextBrush");
 
         LoadChipText.Text = Loc.Get(level == LoadLevel.Outage ? "Outage" : "Load");
         LoadChipText.Foreground = brush;
@@ -1070,6 +1092,16 @@ public partial class MainWindow : Window
         CompactLiveIcon.Foreground = brush;
         TaskbarNetIcon.Foreground = brush;
         TaskbarNetLabel.Foreground = (Brush)FindResource("TextBrush");
+        var linkTip = Loc.Get(state switch
+        {
+            LinkState.Degraded => "LinkDegradedTip",
+            LinkState.Down => "LinkDownTip",
+            _ => "LinkOkTip",
+        });
+
+        TaskbarNetGroup.ToolTip = linkTip;
+        TaskbarNetIcon.ToolTip = linkTip;
+        TaskbarNetLabel.ToolTip = linkTip;
     }
 
     private void CheckFullscreen()

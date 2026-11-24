@@ -61,6 +61,7 @@ Ready-to-run build: [latest release](https://github.com/anteaterantibus-tech/Ope
 - Compact mode: the same limits as three short bars, without extra details.
 - Taskbar mode: a thin limit bar in the free part of the Windows taskbar.
 - The logo glow in the taskbar bar follows the monthly limit colour: green while there is room left, red once it is spent.
+- A `$` badge shows the token price: green at the regular price, yellow during the DeepSeek peak ×2.
 - Auto-hide when a game or movie is fullscreen.
 - Notifications at 70%, 90% and 100% of a limit: a card below the widget, sound and frame glow.
 - OpenCode load indicator: shows when the Go service is degraded due to latency or provider issues.
@@ -228,7 +229,8 @@ Double-click the bar to return to the normal view.
 There is no Go badge in the bar: the logo glows in the monthly limit colour instead.
 The more of the month is spent, the warmer the glow: green, yellow, orange, red.
 The `5h`, `week`, `month`, `net` and `load` labels are white, while the percentages keep the limit colour.
-The plan and renewal date are still available in the tooltip when you hover the bar.
+A `$` badge sits at the right end: green at the regular token price, yellow during the peak ×2.
+A tooltip only describes the element under the cursor: each limit, the connection, the load and the dollar have their own. The plan and renewal date are in the month tooltip.
 
 On Windows 11 the bar sits in the free left area; on Windows 10 it is placed near the tray,
 to the left of the notification area, because Windows 10 keeps app icons on the left.

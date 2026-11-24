@@ -155,6 +155,11 @@
     <sys:String x:Key="PeakWarningsHelp">DeepSeek V4.1 Flash: пик 01:00-04:00 и 06:00-10:00 UTC по будням. Окончание показывается по местному времени.</sys:String>
     <sys:String x:Key="PeakToastFormat">Пик ×2 до {0}</sys:String>
     <sys:String x:Key="PeakFooterFormat">Пик ×2 до {0} · автообновление {1}</sys:String>
+    <sys:String x:Key="PriceNormalTip">Обычная стоимость токенов, без пиковой надбавки.</sys:String>
+    <sys:String x:Key="PricePeakTooltipFormat">Пик ×2 до {0}: токены сейчас стоят вдвое дороже.</sys:String>
+    <sys:String x:Key="LinkOkTip">Связь с opencode.ai есть, данные обновляются.</sys:String>
+    <sys:String x:Key="LinkDegradedTip">Связь нестабильна, показаны последние данные.</sys:String>
+    <sys:String x:Key="LinkDownTip">Нет связи с opencode.ai, показаны последние данные.</sys:String>
     <sys:String x:Key="MonthForecastLasts">Месяц: хватит до {0}</sys:String>
     <sys:String x:Key="MonthForecastTight">Месяц: впритык к {0}</sys:String>
     <sys:String x:Key="MonthForecastEnds">Месяц: закончится ~{0}</sys:String>
