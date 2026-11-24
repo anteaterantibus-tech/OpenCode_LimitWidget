@@ -1069,9 +1069,7 @@ public partial class MainWindow : Window
         LiveIcon.Foreground = brush;
         CompactLiveIcon.Foreground = brush;
         TaskbarNetIcon.Foreground = brush;
-        TaskbarNetLabel.Foreground = state == LinkState.Ok
-            ? (Brush)FindResource("MutedBrush")
-            : brush;
+        TaskbarNetLabel.Foreground = (Brush)FindResource("TextBrush");
     }
 
     private void CheckFullscreen()

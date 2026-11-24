@@ -227,6 +227,7 @@ Double-click the bar to return to the normal view.
 
 There is no Go badge in the bar: the logo glows in the monthly limit colour instead.
 The more of the month is spent, the warmer the glow: green, yellow, orange, red.
+The `5h`, `week`, `month`, `net` and `load` labels are white, while the percentages keep the limit colour.
 The plan and renewal date are still available in the tooltip when you hover the bar.
 
 On Windows 11 the bar sits in the free left area; on Windows 10 it is placed near the tray,
